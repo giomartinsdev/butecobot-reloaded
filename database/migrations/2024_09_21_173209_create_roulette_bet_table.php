@@ -15,6 +15,8 @@ class CreateRouletteBetTable extends Migration
     {
         Schema::create('roulette_bet', function (Blueprint $table): void {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('roulette_id');
             $table->integer('bet_amount')->nullable();
             $table->integer('choice')->nullable();
             $table->timestamps();
@@ -24,8 +26,8 @@ class CreateRouletteBetTable extends Migration
             $table->index('roulette_id');
 
             // Foreign Key Constraints
-            $table->foreignId('user_id')->references('id')->on('users');
-            $table->foreignId('roulette_id')->references('id')->on('roulette');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('roulette_id')->references('id')->on('roulette');
         });
     }
 

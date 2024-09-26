@@ -15,6 +15,7 @@ class CreateRouletteTable extends Migration
     {
         Schema::create('roulette', function (Blueprint $table): void {
             $table->id();
+            $table->unsignedBigInteger('created_by');
             $table->integer('result')->nullable();
             $table->integer('status')->default(0);
             $table->string('description', 255)->nullable();
@@ -25,7 +26,7 @@ class CreateRouletteTable extends Migration
             $table->index('created_by');
 
             // Foreign Key Constraints
-            $table->foreignId('created_by')->references('id')->on('users');
+            $table->foreign('created_by')->after('id')->references('id')->on('users');
         });
     }
 

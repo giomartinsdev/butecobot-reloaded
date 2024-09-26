@@ -15,18 +15,19 @@ class CreateUsersCoinsHistoryTable extends Migration
     {
         Schema::create('users_coins_history', function (Blueprint $table): void {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->bigInteger('entity_id')->nullable();
             $table->decimal('amount', 10, 2);
             $table->string('type', 255)->comment('Initial | Bet | Event | Fix | Old Bot | Gift | Daily | Transfer | Troll');
             $table->text('description')->nullable();
             $table->timestamps();
 
+            // Foreign Key Constraints
+            $table->foreign('user_id')->references('id')->on('users');
+
             // Keys and Indexes
             $table->index('user_id');
             $table->index('type');
-
-            // Foreign Key Constraints
-            $table->foreignId('user_id')->references('id')->on('users');
         });
     }
 

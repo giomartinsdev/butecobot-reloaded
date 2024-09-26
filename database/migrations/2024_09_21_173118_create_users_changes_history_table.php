@@ -15,6 +15,7 @@ class CreateUsersChangesHistoryTable extends Migration
     {
         Schema::create('users_changes_history', function (Blueprint $table): void {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->string('info', 255);
             $table->string('event_label', 255);
             $table->timestamps();
@@ -24,7 +25,7 @@ class CreateUsersChangesHistoryTable extends Migration
             $table->index('user_id');
 
             // Foreign Key Constraints
-            $table->foreignId('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

@@ -15,7 +15,7 @@ class CreateEventsTable extends Migration
     {
         Schema::create('events', function (Blueprint $table): void {
             $table->id();
-            // $table->bigInteger('winner_choice_id');
+            $table->unsignedBigInteger('winner_choice_id');
             $table->string('name', 255);
             $table->tinyInteger('status');
             $table->timestamps();
@@ -29,6 +29,7 @@ class CreateEventsTable extends Migration
 
         Schema::create('events_choices', function (Blueprint $table): void {
             $table->id();
+            $table->unsignedBigInteger('event_id');
             $table->string('choice', 255);
             $table->string('description', 255);
             $table->timestamps();
@@ -37,12 +38,11 @@ class CreateEventsTable extends Migration
             $table->index('event_id');
 
             // Foreign Key Constraints
-            $table->foreignId('event_id')->references('id')->on('events');
+            $table->foreign('event_id')->references('id')->on('events');
         });
 
         Schema::table('events', function (Blueprint $table): void {
-            $table->foreignId('winner_choice_id')->nullable()->after('id')
-                    ->references('id')->on('events_choices');
+            $table->foreign('winner_choice_id')->references('id')->on('events_choices');
             $table->index('winner_choice_id');
         });
 

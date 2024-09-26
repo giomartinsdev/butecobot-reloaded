@@ -15,6 +15,8 @@ class CreateTrolloutHistoryTable extends Migration
     {
         Schema::create('trollout_history', function (Blueprint $table): void {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('to_id');
             $table->timestamps();
 
             // Keys and Indexes
@@ -22,8 +24,8 @@ class CreateTrolloutHistoryTable extends Migration
             $table->index('to_id');
 
             // Foreign Key Constraints
-            $table->foreignId('user_id')->references('id')->on('users');
-            $table->foreignId('to_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('to_id')->references('id')->on('users');
         });
     }
 
