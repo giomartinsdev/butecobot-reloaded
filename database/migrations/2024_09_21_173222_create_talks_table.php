@@ -4,27 +4,32 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateTalksTable extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('talks', function (Blueprint $table): void {
             $table->id();
-            $table->string('username')->index();
-            $table->string('discord_id')->index()->unique();
-            $table->boolean('is_admin')->default(false);
+            $table->string('triggertext', 255);
+            $table->string('type', 100);
+            $table->json('answer');
+            $table->tinyInteger('status');
             $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('talks');
     }
-};
+}

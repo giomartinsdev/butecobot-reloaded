@@ -2,40 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Model
 {
-    use HasApiTokens;
+    protected $table = 'users';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<string>
-     */
     protected $fillable = [
-        'username',
         'discord_id',
-        'is_admin',
+        'discord_username',
+        'discord_global_name',
+        'discord_avatar',
+        'discord_joined_at',
+        'received_initial_coins',
+        'created_at',
+        'updated_at',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string>
-     */
-    protected $casts = [
-        'is_admin' => 'boolean',
-    ];
-
-    /**
-     * The highlighted Discord ID.
-     *
-     * @return string
-     */
-    public function getHighlightAttribute()
+    public function bets(): HasMany
     {
-        return "<@{$this->discord_id}>";
+        return $this->hasMany(EventBet::class, 'user_id');
     }
 }
