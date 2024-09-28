@@ -1,4 +1,4 @@
-FROM brunofunnie/butecobot-reloaded-php:arm64v8-latest
+FROM brunofunnie/butecobot-reloaded-php:latest
 
 WORKDIR /app
 
