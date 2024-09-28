@@ -19,7 +19,7 @@ class UserCoinHistoryRepository
         float $amount,
         string $type,
         int $entityId = null,
-        string|null $description = null
+        ?string $description = null
     ) : UserCoinHistory
     {
         return UserCoinHistory::create([
@@ -31,7 +31,7 @@ class UserCoinHistoryRepository
         ]);
     }
 
-    public function spendCoins(int $discordId, float $amount, string $type, array|null $description = null) : bool
+    public function spendCoins(string $discordId, float $amount, string $type, ?array $description = null) : bool
     {
         $user = User::where('discord_id', $discordId)->first();
 

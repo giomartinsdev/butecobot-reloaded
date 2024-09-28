@@ -12,7 +12,7 @@ class EventChoiceRepository
         return EventChoice::all();
     }
 
-    public function getByEventAndChoice(int $eventId, string $choice) : EventChoice
+    public function getByEventAndChoice(int $eventId, string $choice) : ?EventChoice
     {
         return EventChoice::where('event_id', $eventId)
             ->where('choice', $choice)

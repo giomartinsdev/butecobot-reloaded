@@ -71,10 +71,11 @@ class CoinsCommand extends SlashCommand
                 ) {
                     $interaction->sendFollowUpMessage(
                         $this->message('Não vai brotar dinheiro do nada! Aguarde 1 min para ver seu extrato!')
-                                ->title('Suas coins')
-                                ->color('#FF0000')
-                                ->thumbnail(config('images.steve_no'))
-                                ->build()
+                        ->title('Suas coins')
+                        ->color('#FF0000')
+                        ->thumbnail(config('images.steve_no'))
+                        ->build(),
+                        true
                     );
                     return;
                 }
@@ -93,10 +94,11 @@ class CoinsCommand extends SlashCommand
                     )) {
                         $interaction->sendFollowUpMessage(
                             $this->message('Você recebeu **100** coins iniciais! Aposte sabiamente :man_mage:')
-                                ->title('Bem vindo')
-                                ->color('#F5D920')
-                                ->thumbnail(config('images.one_coin'))
-                                ->build()
+                            ->title('Bem vindo')
+                            ->color('#F5D920')
+                            ->thumbnail(config('images.one_coin'))
+                            ->build(),
+                            true
                         );
 
                         return;
@@ -110,10 +112,11 @@ class CoinsCommand extends SlashCommand
 
                     $interaction->sendFollowUpMessage(
                         $this->message('Você recebeu **100** coins iniciais! Aposte sabiamente :man_mage:')
-                            ->title('Bem vindo')
-                            ->color('#F5D920')
-                            ->thumbnail(config('images.one_coin'))
-                            ->build()
+                        ->title('Bem vindo')
+                        ->color('#F5D920')
+                        ->thumbnail(config('images.one_coin'))
+                        ->build(),
+                        true
                     );
                 }
 
@@ -136,10 +139,11 @@ class CoinsCommand extends SlashCommand
 
                 $interaction->sendFollowUpMessage(
                     $this->message($message)
-                        ->title('Saldo')
-                        ->color($currentCoins === 0 ? '#FF0000' : '#00FF00')
-                        ->thumbnail($image)
-                        ->build()
+                    ->title('Saldo')
+                    ->color($currentCoins === 0 ? '#FF0000' : '#00FF00')
+                    ->thumbnail($image)
+                    ->build(),
+                    true
                 );
             });
         });

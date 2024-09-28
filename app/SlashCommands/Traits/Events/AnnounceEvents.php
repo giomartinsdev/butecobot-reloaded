@@ -70,6 +70,8 @@ trait AnnounceEvents
             $this->message($eventsDescription)
             ->title(sprintf('[#%s] %s', $event['id'], $event['name']))
             ->color('#F5D920')
+            ->button('Apostar A', route: "betOn:{$event['id']}:A")
+            ->button('Apostar B', route: "betOn:{$event['id']}:B")
             ->image(config('butecobot.images.events')[$bannerKey])
             ->build()
         );

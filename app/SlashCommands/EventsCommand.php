@@ -198,7 +198,7 @@ class EventsCommand extends SlashCommand
      *
      * @var bool
      */
-    protected $admin = false;
+    protected $admin = true;
 
     /**
      * Indicates whether the command should be displayed in the commands list.
@@ -258,6 +258,7 @@ class EventsCommand extends SlashCommand
         return [
             'list:backward' => fn (Interaction $interaction) => $this->listEventsBackward($interaction),
             'list:forward' => fn (Interaction $interaction) => $this->listEventsForward($interaction),
+            'betOn:{evento}:{choice}' => fn (Interaction $interaction, int $evento, string $choice) => $this->betEventModal($interaction, $evento, $choice),
         ];
     }
 }

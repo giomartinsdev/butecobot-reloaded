@@ -15,7 +15,8 @@ class CreateEventsTable extends Migration
     {
         Schema::create('events', function (Blueprint $table): void {
             $table->id();
-            $table->unsignedBigInteger('winner_choice_id');
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('winner_choice_id')->nullable();
             $table->string('name', 255);
             $table->tinyInteger('status');
             $table->timestamps();
@@ -24,7 +25,7 @@ class CreateEventsTable extends Migration
             $table->index('created_by');
 
             // Foreign Key Constraints
-            $table->foreignId('created_by')->references('id')->on('users');
+            $table->foreign('created_by')->references('id')->on('users');
         });
 
         Schema::create('events_choices', function (Blueprint $table): void {

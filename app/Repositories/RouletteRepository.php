@@ -53,7 +53,7 @@ class RouletteRepository
         $this->userCoinHistoryRepository = new UserCoinHistoryRepository;
     }
 
-    public function createEvent(string $eventName, int $value, int $discordId): int|bool
+    public function createEvent(string $eventName, int $value, string $discordId): int|bool
     {
         $user = $this->userRepository->getByDiscordId($discordId);
         $userId = $user['id'];
@@ -158,7 +158,7 @@ class RouletteRepository
             $betPayout = $bet['amount'] * $odd;
             $winners[] = [
                 'discord_id' => $bet['discord_id'],
-                'discord_username' => $bet['discord_username'],
+                'username' => $bet['username'],
                 'choice' => $bet['choice'],
                 'earnings' => $betPayout,
             ];

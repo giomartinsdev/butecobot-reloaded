@@ -1,0 +1,73 @@
+services:
+  butecobot-reloaded:
+    container_name: butecobot-reloaded-app
+    image: brunofunnie/butecobot-reloaded-app:latest
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_DATABASE=${DB_DATABASE:-butecobot}
+      - DB_USERNAME=${DB_USERNAME:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-root}
+    volumes:
+      - ./.env:/app/.env
+      - ./storage/:/app/storage/
+      - ./storage/logs/:/app/logs/
+    networks:
+      butecobot-reloaded:
+
+  mysql:
+    container_name: butecobot-reloaded-mysql
+    image: mysql:8.1.0
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=butecobot
+      - MYSQL_USER=butecobot
+      - MYSQL_PASSWORD=butecobot
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./docker/confs/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+       butecobot-reloaded:
+
+  pma:
+    container_name: butecobot-reloaded-pma
+    image: phpmyadmin:5.2.1-apache
+    ports:
+      - 8081:80
+    environment:
+      - PMA_ARBITRARY=1
+      - MEMORY_LIMIT=2048M
+      - UPLOAD_LIMIT=2048M
+    networks:
+       butecobot-reloaded:
+
+  redis:
+    container_name: butecobot-reloaded-redis
+    image: redis:7.2.0-alpine
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel debug --requirepass redis
+    volumes:
+      - redis:/data
+    networks:
+       butecobot-reloaded:
+
+  mpit:
+    container_name: butecobot-reloaded-mailpit
+    image: axllent/mailpit
+    ports:
+      - 8025:8025
+      - 1025:1025
+    environment:
+      - TZ=America/Sao_Paulo
+    networks:
+       butecobot-reloaded:
+
+networks:
+  butecobot-reloaded:
+
+volumes:
+  mysql:
+  redis:

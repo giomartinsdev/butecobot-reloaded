@@ -43,7 +43,7 @@ return [
     |
     */
 
-    'intents' => Intents::getDefaultIntents() | Intents::MESSAGE_CONTENT | Intents::GUILD_MEMBERS,
+    'intents' => Intents::getDefaultIntents() | Intents::MESSAGE_CONTENT | Intents::GUILD_MEMBERS | Intents::GUILD_MESSAGES,
 
     /*
     |--------------------------------------------------------------------------
@@ -134,7 +134,7 @@ return [
     */
 
     'commands' => [
-        Laracord\Commands\HelpCommand::class,
+        // Laracord\Commands\HelpCommand::class,
     ],
 
     /*

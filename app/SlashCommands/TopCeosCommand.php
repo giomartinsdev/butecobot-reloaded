@@ -72,7 +72,7 @@ class TopCeosCommand extends SlashCommand
         $acc = '';
 
         foreach ($top10list as $key => $bet) {
-            $username = substr($bet['user']['discord_global_name'] ?? $bet['user']['discord_username'], 0, 25);
+            $username = substr($bet['user']['nickname'] ?? $bet['user']['username'], 0, 25);
             $users .= match ($key) {
                 0 => sprintf(":first_place: %s\n", $username),
                 1 => sprintf(":second_place: %s\n", $username),

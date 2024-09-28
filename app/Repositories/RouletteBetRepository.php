@@ -63,12 +63,12 @@ class RouletteBetRepository
             'roulette_bet.user_id',
             'roulette_bet.choice',
             'users.discord_id',
-            'users.discord_username',
+            'users.username',
             DB::raw('sum(roulette_bet.bet_amount) as amount'),
         )
         ->join('users', 'roulette_bet.user_id', '=', 'users.id')
         ->where('roulette_id', $eventId)
-        ->groupBy('roulette_bet.user_id', 'roulette_bet.choice', 'users.discord_id', 'users.discord_username')
+        ->groupBy('roulette_bet.user_id', 'roulette_bet.choice', 'users.discord_id', 'users.username')
         ->get()
         ->toArray();
     }

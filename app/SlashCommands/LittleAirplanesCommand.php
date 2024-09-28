@@ -43,7 +43,7 @@ class LittleAirplanesCommand extends SlashCommand
      *
      * @var bool
      */
-    protected $admin = false;
+    protected $admin = true;
 
     /**
      * Indicates whether the command should be displayed in the commands list.

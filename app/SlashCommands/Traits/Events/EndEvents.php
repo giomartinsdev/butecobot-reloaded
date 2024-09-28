@@ -20,7 +20,7 @@ trait EndEvents
     {
         $eventRepository = new EventRepository;
         $eventId = $this->value('encerrar.evento');
-        $choiceLabel = $this->value('encerrar.opcao');
+        $choiceOption = strtoupper($this->value('encerrar.opcao'));
         $event = $eventRepository->getEventById($eventId);
 
         if (!$event) {
@@ -53,7 +53,7 @@ trait EndEvents
             return;
         }
 
-        if ($choiceLabel === 'Empate') {
+        if ($choiceOption === 'Empate') {
             if (!$eventRepository->drawEvent($eventId)) {
                 $interaction->respondWithMessage(
                     $this->message('Erro ao encerrar evento')
@@ -73,9 +73,9 @@ trait EndEvents
             return;
         }
 
-        $winners = $eventRepository->payoutEvent($eventId, $choiceLabel);
+        $payoutEvent = $eventRepository->payoutEvent($eventId, $choiceOption);
 
-        if (count($winners) === 0) {
+        if (count($payoutEvent['winners']) === 0) {
             $interaction->respondWithMessage($this->messageComposer->embed(
                 'Evento',
                 'Não houveram apostas neste evento!'
@@ -87,17 +87,18 @@ trait EndEvents
         $winnersLabel = '';
         $earningsLabel = '';
 
-        foreach ($winners as $winner) {
-            if ($winner['choice'] == $choiceLabel) {
+        foreach ($payoutEvent['winners'] as $winner) {
+            if ($winner['choice'] == $choiceOption) {
                 $winnersLabel .= sprintf("<@%s> \n", $winner['discord_id']);
                 $earningsLabel .= sprintf("%s %s \n", $winner['earnings'], $winner['extraLabel']);
             }
         }
 
         $eventsDescription = sprintf(
-            "**%s** \n **Vencedor**: %s \n \n \n",
+            "**%s** \n **Vencedor**: %s - %s \n \n \n",
             $event['name'],
-            $choiceLabel,
+            $choiceOption,
+            $payoutEvent['winner_choice']['description']
         );
 
         $interaction->respondWithMessage(

@@ -2,6 +2,8 @@
 
 namespace App\SlashCommands\Traits\Events;
 
+use Discord\Helpers\Collection;
+use Discord\Parts\Interactions\Interaction;
 use Laracord\Commands\SlashCommand;
 use App\Repositories\EventRepository;
 use App\Repositories\EventBetRepository;
@@ -20,19 +22,62 @@ trait BetEvents
      */
     public function betEvent($interaction)
     {
-        $userRepository = new UserRepository;
-        $eventRepository = new EventRepository;
-        $eventBetRepository = new EventBetRepository;
         $betEventId = $this->value('apostar.evento');
         $betChoice = $this->value('apostar.opcao');
         $betAmount = $this->value('apostar.valor');
-        $discordId = $interaction->member->user->id;
-        $event = $eventRepository->getEventById($betEventId);
-        $user = $userRepository->getByDiscordId($discordId);
 
-        if (!$user) {
+        $this->betEventBet($interaction, $betEventId, $betChoice, $betAmount);
+    }
+
+    /**
+     * @param \Discord\Parts\Interactions\Interaction $interaction
+     * @param string $choice
+     * @return void
+     */
+    public function betEventModal($interaction, int $event, string $choice): void
+    {
+        $this
+            ->modal('Apostar no Evento')
+            ->text('Evento', placeholder: 'Digite o ID do evento', required: true, value: $event)
+            ->text('Escolha', placeholder: 'Escolha A ou B', required: true, value: $choice)
+            ->text('Valor', placeholder: 'Qual valor deseja apostar?', required: true, value: '')
+            ->submit(fn ($interaction, $components) => $this->betEventModalHandler($interaction, $components))
+            ->show($interaction);
+    }
+
+    /**
+     * @param \Discord\Parts\Interactions\Interaction $interaction
+     * @param \Discord\Helpers\Collection $components
+     * @return void
+     */
+    public function betEventModalHandler(Interaction $interaction, Collection $components): void
+    {
+        $event = $components->get('custom_id', 'evento')->value;
+        $choice = $components->get('custom_id', 'escolha')->value;
+        $amount = $components->get('custom_id', 'valor')->value;
+
+        $this->betEventBet($interaction, $event, $choice, $amount);
+    }
+
+    /**
+     * @param mixed $interaction
+     * @param mixed $betEventId
+     * @param mixed $betChoice
+     * @param mixed $betAmount
+     * @return void
+     */
+    public function betEventBet(Interaction $interaction, $betEventId, $betChoice, $betAmount): void
+    {
+        $userRepository = new UserRepository;
+        $eventRepository = new EventRepository;
+        $eventBetRepository = new EventBetRepository;
+        $discordId = $interaction->member->user->id;
+        $user = $userRepository->getByDiscordId($discordId);
+        $betChoice = strtoupper($betChoice);
+
+        if (!is_numeric($betEventId)) {
             $interaction->respondWithMessage(
-                $this->message('Você ainda não coleteu suas coins iniciais! Digita **/coins** e pegue suas coins! :coin::coin::coin:')
+                $this->message('ID do evento inválido')
                     ->title('Eventos')
                     ->build(),
                 true
@@ -40,61 +85,33 @@ trait BetEvents
             return;
         }
 
-        if (!$event) {
-            $interaction->respondWithMessage(
-                $this->message("Evento **#{$betEventId}** não existe")
-                ->title('Eventos')
-                ->build(),
-                true
-            );
-            return;
-        }
+        $event = $eventRepository->getEventById($betEventId);
+        $errorMessage = match(true) {
+            !$user => 'Você ainda não coleteu suas coins iniciais! Digita **/coins** e pegue suas coins! :coin::coin::coin:',
+            !$event => "Evento **#{$betEventId}** não existe",
+            $event['status'] !== EventRepository::OPEN => 'Evento fechado para apostas!',
+            $eventBetRepository->didUserBet($discordId, $betEventId) => 'Você já apostou neste evento!',
+            $betAmount <= 0 || !is_numeric($betAmount) => 'Valor da aposta inválido, o valor deve ser acima de 0',
+            !$userRepository->hasAvailableCoins($discordId, $betAmount) => 'Você não possui coins suficientes!',
+            !in_array($betChoice, ['A', 'B']) => 'Escolha inválida, escolha A ou B',
+            default => null,
+        };
 
-        if ($event['status'] !== EventRepository::OPEN) {
+        if ($errorMessage) {
             $interaction->respondWithMessage(
-                $this->message('Evento fechado para apostas!')
-                ->title('Eventos')
-                ->build(),
-                true
-            );
-            return;
-        }
-
-        if ($eventBetRepository->didUserBet($discordId, $betEventId)) {
-            $interaction->respondWithMessage(
-                $this->message('Você já apostou neste evento!')
-                ->title('Eventos')
-                ->build(),
-                true
-            );
-            return;
-        }
-
-        if ($betAmount <= 0) {
-            $interaction->respondWithMessage(
-                $this->message('Valor da aposta inválido, o valor deve ser acima de 0')
-                ->title('Aposta')
-                ->build(),
-                true
-            );
-            return;
-        }
-
-        if (!$userRepository->hasAvailableCoins($discordId, $betAmount)) {
-            $interaction->respondWithMessage(
-                $this->message('Você não possui coins suficientes!')
-                ->title('Eventos')
-                ->build(),
+                $this->message($errorMessage)
+                    ->title('Eventos')
+                    ->build(),
                 true
             );
             return;
         }
 
         $bet = $eventBetRepository->create($discordId, $betEventId, $betChoice, $betAmount);
-        $choiceDetails = array_filter(
+        $choiceDetails = array_values(array_filter(
             $event['choices']->toArray(),
             fn ($item) => $item['choice'] === $betChoice
-        );
+        ));
 
         if ($bet) {
             $interaction->respondWithMessage(
@@ -108,6 +125,8 @@ trait BetEvents
                 ))
                 ->title('Eventos')
                 ->color('#F5D920')
+                ->authorIcon($interaction->member->user->getAvatarAttribute())
+                ->authorName($interaction->member->user->username)
                 ->thumbnail(config('butecobot.images.place_bet'))
                 ->build(),
                 true

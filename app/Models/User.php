@@ -11,10 +11,10 @@ class User extends Model
 
     protected $fillable = [
         'discord_id',
-        'discord_username',
-        'discord_global_name',
-        'discord_avatar',
-        'discord_joined_at',
+        'username',
+        'nickname',
+        'avatar',
+        'joined_at',
         'received_initial_coins',
         'created_at',
         'updated_at',

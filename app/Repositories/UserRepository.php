@@ -21,7 +21,7 @@ class UserRepository
         return $createUser->id;
     }
 
-    public function getByDiscordId(int $discordId): User|null
+    public function getByDiscordId(string $discordId): ?User
     {
         return User::where('discord_id', $discordId)->first();
     }
@@ -32,21 +32,21 @@ class UserRepository
     }
 
     public function registerAndGiveInitialCoins(
-        int $discordId,
-        string $discordUsername,
-        string $discordGlobalName,
-        string $discordAvatar,
-        string $discordJoinedAt
+        string $discordId,
+        string $username,
+        string $nickname,
+        string $avatar,
+        string $joinedAt
     ): bool
     {
         DB::beginTransaction();
 
         $createUser = User::create([
             'discord_id' => $discordId,
-            'discord_username' => $discordUsername,
-            'discord_global_name' => $discordGlobalName,
-            'discord_avatar' => $discordAvatar,
-            'discord_joined_at' => $discordJoinedAt,
+            'username' => $username,
+            'nickname' => $nickname,
+            'avatar' => $avatar,
+            'joined_at' => $joinedAt,
             'received_initial_coins' => 1
         ]);
 
@@ -65,7 +65,7 @@ class UserRepository
         return true;
     }
 
-    public function giveCoins(int $discordId, float $amount, string $type, string $description = null): UserCoinHistory
+    public function giveCoins(string $discordId, float $amount, string $type, string $description = null): UserCoinHistory
     {
         $user = $this->getByDiscordId($discordId);
 
@@ -81,7 +81,7 @@ class UserRepository
         ]);
     }
 
-    public function canReceivedDailyCoins(int $discordId): bool
+    public function canReceivedDailyCoins(string $discordId): bool
     {
         $userCoinHistory = UserCoinHistory::
                                 whereHas('user', function ($query) use ($discordId) {
@@ -102,7 +102,7 @@ class UserRepository
         return $user->save();
     }
 
-    public function getCurrentCoins(int $discordId): UserCoinHistory
+    public function getCurrentCoins(string $discordId): UserCoinHistory
     {
         return UserCoinHistory::
                     whereHas('user', function ($query) use ($discordId) {
@@ -112,7 +112,7 @@ class UserRepository
                         ->first();
     }
 
-    public function hasAvailableCoins(int $discordId, int $amount): bool
+    public function hasAvailableCoins(string $discordId, int $amount): bool
     {
         $userCoinsHistory = UserCoinHistory::whereHas('user', function ($query) use ($discordId) {
                                 $query->where('discord_id', $discordId);
@@ -123,7 +123,7 @@ class UserRepository
         return $userCoinsHistory['total'] >= $amount;
     }
 
-    public function userExistByDiscordId(int $discordId): bool
+    public function userExistByDiscordId(string $discordId): bool
     {
         $user = User::where('discord_id', $discordId)->get()->toArray();
 

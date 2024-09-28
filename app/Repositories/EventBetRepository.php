@@ -28,7 +28,7 @@ class EventBetRepository
         return EventBet::all();
     }
 
-    public function create(int $discordId, int $eventId, string $choice, float $amount): bool
+    public function create(string $discordId, int $eventId, string $choice, float $amount): bool
     {
         try {
             $eventRepository = new EventRepository;
@@ -53,7 +53,7 @@ class EventBetRepository
                 $eventId,
                 json_encode([
                     'betted' => $amount,
-                    'choice' => $choice['description'],
+                    'choice' => $choice['choice'],
                     'odds' => $choice === 'A' ? $odds['odds_a'] : $odds['odds_b'],
                 ])
             );
@@ -77,7 +77,7 @@ class EventBetRepository
         ->get();
     }
 
-    public function didUserBet(int $discordId, int $eventId): bool
+    public function didUserBet(string $discordId, int $eventId): bool
     {
         $user = $this->userRepository->getByDiscordId($discordId);
 

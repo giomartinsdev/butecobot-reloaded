@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Laracord\Commands\SlashCommand;
 use App\Models\Event;
 use App\Models\EventChoice;
 
@@ -37,7 +38,7 @@ class EventRepository
     private UserCoinHistoryRepository $userCoinHistoryRepository;
     private int $eventExtraLuckyChance;
 
-    public function __construct()
+    public function __construct(private ?SlashCommand $slashCommand = null)
     {
         $this->userRepository = new UserRepository;
         $this->userCoinHistoryRepository = new UserCoinHistoryRepository;
@@ -51,12 +52,12 @@ class EventRepository
         return Event::all();
     }
 
-    public function getEventById(int $eventId): Event
+    public function getEventById(int $eventId): ?Event
     {
-        return Event::find($eventId);
+        return Event::with('choices', 'bets', 'created_by', 'winner_choice')->find($eventId);
     }
 
-    public function create(string $eventName, string $optionA, string $optionB, int $discordId): bool|Event
+    public function create(string $eventName, string $optionA, string $optionB, string $discordId): bool|Event
     {
         try {
             DB::beginTransaction();
@@ -86,6 +87,7 @@ class EventRepository
             return $newEvent;
         } catch (\Exception $e) {
             DB::rollback();
+            $this->slashCommand->console()->log($e->getMessage());
             return false;
         }
     }
@@ -225,6 +227,14 @@ class EventRepository
         DB::beginTransaction();
 
         try {
+            $payoutEvents = [
+                'winner_choice' => [
+                    'option' => $choice['description'],
+                    'description' => $choice['description']
+                ],
+                'winners' => []
+            ];
+
             foreach ($event['bets'] as $bet) {
                 if ($bet['choice_id'] !== $choice['id']) {
                     continue;
@@ -244,15 +254,15 @@ class EventRepository
                     $eventId,
                     json_encode([
                         'betted' => $bet['amount'],
-                        'choice' => $bet['event_choice']['description'],
+                        'choice' => $bet['event_choice']['choice'],
                         'odds' => $choice['choice'] === 'A' ? round($odds['odds_a'], 2) : round($odds['odds_b'], 2),
                         'extraLucky' => $ownExtra ? sprintf('Extra Lucky: %s', $extra) : null
                     ])
                 );
 
-                $winners[] = [
+                $payoutEvents['winners'][] = [
                     'discord_id' => $bet['user']['discord_id'],
-                    'discord_username' => $bet['user']['discord_username'],
+                    'username' => $bet['user']['username'],
                     'choice' => $bet['event_choice']['choice'],
                     'earnings' => $betPayoutFinal,
                     'extraLabel' => $ownExtra ? sprintf(' (:rocket: %sx)', $extra) : false,
@@ -265,7 +275,7 @@ class EventRepository
 
             DB::commit();
 
-            return $winners;
+            return $payoutEvents;
         } catch (\Exception $e) {
             DB::rollback();
             return [];
