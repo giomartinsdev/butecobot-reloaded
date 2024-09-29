@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7717cfb67e61c3196b3ac9154ae5de77",
+    "content-hash": "7e42d6c30235508bc36c1f62f30fb76f",
     "packages": [
         {
             "name": "brick/math",
@@ -2958,13 +2958,13 @@
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/brunofunnie/framework.git",
-                "reference": "7db32078c2bba47ecfa969a76f0018312850b2c1"
+                "url": "https://github.com/laracord/framework.git",
+                "reference": "259e3190b5dc4bf4785d0bcc52b26af5cd1ccd07"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brunofunnie/framework/zipball/7db32078c2bba47ecfa969a76f0018312850b2c1",
-                "reference": "7db32078c2bba47ecfa969a76f0018312850b2c1",
+                "url": "https://api.github.com/repos/laracord/framework/zipball/259e3190b5dc4bf4785d0bcc52b26af5cd1ccd07",
+                "reference": "259e3190b5dc4bf4785d0bcc52b26af5cd1ccd07",
                 "shasum": ""
             },
             "require": {
@@ -2995,13 +2995,14 @@
             "default-branch": true,
             "type": "package",
             "autoload": {
-                "psr-4": {
-                    "Laracord\\": "src/"
-                },
                 "files": [
                     "src/helpers.php"
-                ]
+                ],
+                "psr-4": {
+                    "Laracord\\": "src/"
+                }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3020,15 +3021,16 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/brunofunnie/framework/tree/main"
+                "issues": "https://github.com/laracord/framework/issues",
+                "source": "https://github.com/laracord/framework/tree/v2.3.9"
             },
             "funding": [
                 {
-                    "type": "github",
-                    "url": "https://github.com/Log1x"
+                    "url": "https://github.com/Log1x",
+                    "type": "github"
                 }
             ],
-            "time": "2024-09-26T23:11:20+00:00"
+            "time": "2024-08-20T03:37:18+00:00"
         },
         {
             "name": "laravel-zero/foundation",
