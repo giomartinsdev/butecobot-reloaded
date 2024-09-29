@@ -6,6 +6,6 @@ COPY . /src/
 
 RUN cd /src && composer install --no-dev --optimize-autoloader --no-interaction
 
-COPY confs/entrypoint.sh /entrypoint.sh
+COPY docker/confs/entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
