@@ -53,7 +53,7 @@ trait EndEvents
             return;
         }
 
-        if ($choiceOption === 'Empate') {
+        if ($choiceOption === 'EMPATE') {
             if (!$eventRepository->drawEvent($eventId)) {
                 $interaction->respondWithMessage(
                     $this->message('Erro ao encerrar evento')
