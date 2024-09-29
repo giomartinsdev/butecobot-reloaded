@@ -1,7 +1,7 @@
 FROM php:8.3.6-fpm
 
 ENV DEBIAN_FRONTEND=noninteractive
-WORKDIR /app
+WORKDIR /tmp
 
 RUN apt-get update -y \
     && apt-get install --no-install-recommends -y \
@@ -37,10 +37,6 @@ RUN curl -L -o /tmp/imagick.tar.gz https://github.com/Imagick/imagick/archive/70
     && make install \
     && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini \
     && rm -rf /tmp/*
-
-RUN groupadd --force -g 1000 raft \
-    && useradd -ms /bin/bash --no-user-group -g raft -u 1000 raft \
-    && chown -R raft:raft /app && chmod -R 755 /app
 
 COPY confs/php/ini/* /usr/local/etc/php/conf.d/
 COPY confs/php/fpm/* /usr/local/etc/php-fpm.d/
