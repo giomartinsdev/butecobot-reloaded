@@ -41,6 +41,4 @@ RUN curl -L -o /tmp/imagick.tar.gz https://github.com/Imagick/imagick/archive/70
 COPY confs/php/ini/* /usr/local/etc/php/conf.d/
 COPY confs/php/fpm/* /usr/local/etc/php-fpm.d/
 COPY confs/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY confs/entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
