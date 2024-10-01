@@ -6,8 +6,5 @@ This bot was developed using:
 
 # Getting started
 
-Coming soon
+Dentro da pasta bot installation vc apredera instalar o bot
 
-# Assets
-
-Coming soon
