@@ -101,7 +101,7 @@ class LittleAirplanesCommand extends SlashCommand
             $interaction->respondWithMessage(
                 $this->message(sprintf(
                         'Foram **%s coins** em :airplane_small: aviõeszinhos hoje que não dava pra ver o céu oêê! Agora só amanhã rá rá ê hi hi!',
-                        getenv('LITTLE_AIRPLANES_MAXIMUM_AMOUNT_DAY')
+                        env('LITTLE_AIRPLANES_MAXIMUM_AMOUNT_DAY')
                     ))
                     ->title('MAH ÔÊÊ!')
                     ->color('#FF0000')
