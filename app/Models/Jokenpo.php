@@ -10,7 +10,7 @@ class Jokenpo extends Model
 
     protected $fillable = [
         'created_by',
-        'move',
+        'bot_move',
     ];
 
     public function created_by()

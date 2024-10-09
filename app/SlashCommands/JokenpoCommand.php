@@ -59,16 +59,18 @@ class JokenpoCommand extends SlashCommand
     /**
      * The game instance.
      *
-     * @var JokenpoEntity|null
+     * @var JokenpoEntity[]
      */
-    protected ?JokenpoEntity $game = null;
+    protected array $games = [];
 
     /**
-     * Game timer counter.
+     * Game timers counters.
      *
-     * @var int
+     * @var array
      */
-    protected int $counter = 0;
+    protected array $counters = [];
+
+    protected array $timers = [];
 
     /**
      * Handle the slash command.
@@ -83,19 +85,15 @@ class JokenpoCommand extends SlashCommand
         $newGame = Jokenpo::create([
             'created_by' => $user['id'],
         ]);
-        $game = Redis::get("jokenpo:game:{$newGame['id']}");
+        Redis::set("jokenpo:game:" . $newGame['id'], serialize($newGame), 'EX', 120);
+        $game = new JokenpoEntity($newGame['id']);
 
-        if ($game) {
-            $game = unserialize($game);
-        } else {
-            $game = new JokenpoEntity($newGame['id']);
-        }
-
-        $this->game = $game;
+        $this->setGame($game);
+        $this->setCounter($game, env('JOKENPO_TIMER', 30));
 
         $interaction->respondWithMessage(
-            $this->buildGameMessage()
-        )->then(fn() => $this->startCounter($interaction));
+            $this->buildGameMessage($game)
+        )->then(fn() => $this->startCounter($interaction, $game));
     }
 
     /**
@@ -104,36 +102,7 @@ class JokenpoCommand extends SlashCommand
     public function interactions() : array
     {
         return [
-            'action:{type}' => fn (Interaction $interaction, string $type) => $this->playJokenpo($interaction, $type),
+            'action:{type}:{gameId}' => fn (Interaction $interaction, string $type, int $gameId) => $this->playJokenpo($interaction, $type, $gameId),
         ];
-    }
-
-    public function startCounter(Interaction $interaction)
-    {
-        $this->counter = env('JOKENPO_TIMER', 30);
-
-        $timer = $this->bot->getLoop()->addPeriodicTimer(1, function () use (&$timer, $interaction) {
-            if ($this->counter === 0) {
-                $this->bot->getLoop()->cancelTimer($timer);
-                $this->counter = env('JOKENPO_TIMER', 30);
-                $this->game->setBotMove();
-
-                Redis::del("jokenpo:game:{$this->game->getId()}");
-                Jokenpo::find($this->game->getId())->update([
-                    'bot_move' => $this->game->getBotMove(),
-                ]);
-
-                $interaction->updateOriginalResponse(
-                    $this->buildGameResults()
-                );
-                return;
-            }
-
-            $interaction->updateOriginalResponse(
-                $this->buildGameMessage()
-            );
-
-            $this->counter--;
-        });
     }
 }
