@@ -6,6 +6,7 @@ use Discord\Parts\Interactions\Interaction;
 use Discord\Voice\VoiceClient;
 use Laracord\Commands\SlashCommand;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 use App\Repositories\UserRepository;
 use App\Entities\JokenpoEntity;
 use App\Models\Jokenpo;
@@ -91,7 +92,7 @@ class JokenpoCommand extends SlashCommand
         $this->setCounter($game, env('JOKENPO_TIMER', 30));
 
         $channel = $this->discord->getChannel($interaction->channel_id);
-        $audio = storage_path('sounds/jokenpo.mp3');
+        $audio = Storage::path('sounds/jokenpo.mp3');
         $this->bot->getLogger()->info('Audio: ' . $audio);
         $voice = $this->discord->getVoiceClient($channel->guild_id);
 
