@@ -3,6 +3,7 @@
 namespace App\SlashCommands;
 
 use Discord\Parts\Interactions\Interaction;
+use Discord\Voice\VoiceClient;
 use Laracord\Commands\SlashCommand;
 use Illuminate\Support\Facades\Redis;
 use App\Repositories\UserRepository;
@@ -88,6 +89,21 @@ class JokenpoCommand extends SlashCommand
 
         $this->setGame($game);
         $this->setCounter($game, env('JOKENPO_TIMER', 30));
+
+        $channel = $this->discord->getChannel($interaction->channel_id);
+        $audio = storage_path('sounds/jokenpo.mp3');
+        $this->bot->getLogger()->info('Audio: ' . $audio);
+        $voice = $this->discord->getVoiceClient($channel->guild_id);
+
+        if ($channel->isVoiceBased()) {
+            if ($voice) {
+                $voice->playFile($audio);
+            } else {
+                $this->discord->joinVoiceChannel($channel)->then(function (VoiceClient $voice) use ($audio) {
+                    $voice->playFile($audio);
+                });
+            }
+        }
 
         $interaction->respondWithMessage(
             $this->buildGameMessage($game)
