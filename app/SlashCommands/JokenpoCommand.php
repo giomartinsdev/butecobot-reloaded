@@ -70,8 +70,6 @@ class JokenpoCommand extends SlashCommand
      */
     protected array $counters = [];
 
-    protected array $timers = [];
-
     /**
      * Handle the slash command.
      *
