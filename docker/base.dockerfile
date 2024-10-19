@@ -23,8 +23,8 @@ RUN apt-get update -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-configure intl \
     && docker-php-ext-install -j "$(nproc)" bcmath exif gd gmp intl mysqli pcntl pdo_mysql zip \
-    && pecl install -f redis uv sodium --with-maximum-processors="$(nproc)" \
-    && docker-php-ext-enable redis \
+    && pecl install -f redis uv sodium mongodb --with-maximum-processors="$(nproc)" \
+    && docker-php-ext-enable redis mongodb \
     && apt-get purge -y --auto-remove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

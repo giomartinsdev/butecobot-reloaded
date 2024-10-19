@@ -8,6 +8,8 @@
     "php": "^8.2",
     "illuminate/redis": "^11.23",
     "laracord/framework": "^2.4.0",
+    "mongodb/laravel-mongodb": "^5.1",
+    "openai-php/client": "^0.10.2",
     "predis/predis": "^2.0"
   },
   "require-dev": {

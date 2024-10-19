@@ -43,14 +43,36 @@ services:
     networks:
        bbot:
 
-  redis:
-    container_name: bbot-redis
-    image: redis:7.2.0-alpine
+  mongo:
+    container_name: bbot-mongo
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - mongodb:/data/db
+
+  mongo-express:
+    container_name: bbot-mongo-express
+    image: mongo-express
+    ports:
+      - 8082:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: rootd
+      ME_CONFIG_MONGODB_URL: mongodb://root:root@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+
+  valkey:
+    container_name: bbot-valkey
+    image: valkey/valkey
     ports:
       - 6379:6379
-    command: redis-server --save 20 1 --loglevel debug --requirepass redis
+    command: valkey-server --save 20 1 --loglevel warning --requirepass valkey
     volumes:
-      - redis:/data
+      - valkey:/data
     networks:
        bbot:
 
@@ -70,4 +92,5 @@ networks:
 
 volumes:
   mysql:
-  redis:
+  valkey:
+  mongodb:

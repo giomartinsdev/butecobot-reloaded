@@ -7,8 +7,10 @@ dev:
 	docker buildx build -t brunofunnie/butecobot-reloaded-app:latest --platform=linux/arm/v8 -f docker/app.dockerfile .
 	docker compose down butecobot-reloaded; docker compose up butecobot-reloaded
 dev-essentials:
-	docker compose up -d mysql pma redis mpit
+	docker compose up -d mysql pma valkey mpit mongo mongo-express
 push:
+	docker push brunofunnie/butecobot-reloaded-php:arm64v8-latest
+	docker push brunofunnie/butecobot-reloaded-php:amd64-latest
 	docker manifest create brunofunnie/butecobot-reloaded-php:latest \
 	--amend brunofunnie/butecobot-reloaded-php:amd64-latest \
 	--amend brunofunnie/butecobot-reloaded-php:arm64v8-latest
