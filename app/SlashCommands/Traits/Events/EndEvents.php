@@ -92,7 +92,7 @@ trait EndEvents
         foreach ($payoutEvent['winners'] as $winner) {
             if ($winner['choice'] == $choiceOption) {
                 $winnersLabel .= sprintf("<@%s> \n", $winner['discord_id']);
-                $earningsLabel .= sprintf("%s %s \n", $winner['earnings'], $winner['extraLabel']);
+                $earningsLabel .= sprintf("%s %s \n", number_format($winner['earnings'], 2, '.', ','), $winner['extraLabel']);
             }
         }
 

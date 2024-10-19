@@ -101,12 +101,12 @@ trait BetEvents
         if ($bet) {
             $interaction->respondWithMessage(
                 $this->message(sprintf(
-                        "**%s**\nOpção: **%s - %s**\nValor apostado: **%s** coins",
-                        $event['name'],
-                        $betChoice,
-                        $choiceDetails[0]['description'],
-                        $betAmount,
-                        $betChoice
+                    "**%s**\nOpção: **%s - %s**\nAposta: **%s** coins",
+                    $event['name'],
+                    $betChoice,
+                    $choiceDetails[0]['description'],
+                    number_format($betAmount, 2, '.', ','),
+                    $betChoice
                 ))
                 ->title('Eventos')
                 ->color('#F5D920')

@@ -76,8 +76,8 @@ class TransferCommand extends SlashCommand
         $userCoinHistoryRepository = new UserCoinHistoryRepository;
 
         $fromDiscordId = $interaction->member->user->id;
-        $coins = $interaction->data->options['coins']->value;
         $toDiscordId = $interaction->data->options['usuario']->value;
+        $coins = $interaction->data->options['coins']->value;
         $fromUser = $userRepository->getByDiscordId($fromDiscordId);
         $toUser = $userRepository->getByDiscordId($toDiscordId);
 
@@ -85,7 +85,7 @@ class TransferCommand extends SlashCommand
 
         if ($coins <= 0 || $coins > env('TRANSFER_LIMIT')) {
             $interaction->respondWithMessage(
-                $this->message('Quantidade inválida. Valor deve ser entre 1 e 1000 coins')
+                $this->message(sprintf("Quantidade inválida. Valor deve ser entre 1 e %s coins", env('TRANSFER_LIMIT')))
                     ->title('Transferir')
                     ->authorName('')
                     ->thumbnail('')
@@ -182,11 +182,17 @@ class TransferCommand extends SlashCommand
         }
 
         $interaction->respondWithMessage(
-            $this->message(sprintf("Transferência realizada com sucesso!\n\nValor: **%s** coins\nDestinatário: <@%s>", $coins, $toDiscordId))
-                    ->title('Transferir')
-                    ->authorName('')
-                    ->thumbnail('')
-                    ->build(),
+            $this->message(
+                sprintf(
+                    "Transferência realizada com sucesso!\n\nValor: **%s** coins\nDestinatário: <@%s>",
+                    number_format($coins, 2, ',', '.'),
+                    $toDiscordId
+                )
+            )
+            ->title('Transferir')
+            ->authorName('')
+            ->thumbnail('')
+            ->build(),
             true
         );
     }
