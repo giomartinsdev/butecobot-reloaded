@@ -85,11 +85,16 @@ class TransferCommand extends SlashCommand
 
         if ($coins <= 0 || $coins > env('TRANSFER_LIMIT')) {
             $interaction->respondWithMessage(
-                $this->message(sprintf("Quantidade inválida. Valor deve ser entre 1 e %s coins", env('TRANSFER_LIMIT')))
-                    ->title('Transferir')
-                    ->authorName('')
-                    ->thumbnail('')
-                    ->build()
+                $this->message(
+                    sprintf(
+                        "Quantidade inválida. Valor deve ser entre 1 e %s coins",
+                        number_format(env('TRANSFER_LIMIT'), 2, ',', '.')
+                    )
+                )
+                ->title('Transferir')
+                ->authorName('')
+                ->thumbnail('')
+                ->build()
                 ,
                 true
             );
