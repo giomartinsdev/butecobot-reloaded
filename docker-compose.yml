@@ -4,10 +4,6 @@ services:
     image: brunofunnie/butecobot-reloaded-app:latest
     environment:
       - ENVIRONMENT=${ENVIRONMENT:-development}
-      - DB_HOST=${DB_HOST:-mysql}
-      - DB_DATABASE=${DB_DATABASE:-butecobot}
-      - DB_USERNAME=${DB_USERNAME:-root}
-      - DB_PASSWORD=${DB_PASSWORD:-root}
     volumes:
       - ./builds/.env:/app/.env
       - ./storage/:/app/storage/
@@ -53,6 +49,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: root
     volumes:
       - mongodb:/data/db
+    networks:
+       bbot:
 
   mongo-express:
     container_name: bbot-mongo-express
@@ -64,6 +62,8 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: rootd
       ME_CONFIG_MONGODB_URL: mongodb://root:root@mongo:27017/
       ME_CONFIG_BASICAUTH: false
+    networks:
+       bbot:
 
   valkey:
     container_name: bbot-valkey
