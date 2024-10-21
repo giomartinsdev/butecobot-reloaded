@@ -6,6 +6,7 @@ use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Discord\WebSockets\Event as Events;
 use Laracord\Events\Event;
+use Illuminate\Support\Facades\Date;
 use App\Models\Mongo\Message as MessageModel;
 
 class RecordMessageUpdates extends Event
@@ -26,10 +27,19 @@ class RecordMessageUpdates extends Event
             return;
         }
 
-        $message = MessageModel::where('message_id', $message->id)->first();
-        $history = array_merge($message->history ?? [], [ $oldMessage->content ]);
-        $message->content = $message->content;
-        $message->history = $history;
-        $message->save();
+        $messageRecord = MessageModel::where('message_id', $message->id)->first();
+        $history = $messageRecord->content_history ?? [];
+
+        if (!empty($messageRecord->content)) {
+            $oldMessageHistory = [
+                'content' => $messageRecord->content,
+                'created_at' => Date::now(),
+            ];
+            $history = array_merge($history, [ $oldMessageHistory ]);
+        }
+
+        $messageRecord->content = $message->content;
+        $messageRecord->content_history = $history;
+        $messageRecord->save();
     }
 }

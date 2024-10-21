@@ -5,6 +5,7 @@ namespace App\Events;
 use Discord\Discord;
 use Discord\Parts\WebSockets\MessageReaction;
 use Discord\WebSockets\Event as Events;
+use Illuminate\Support\Facades\Date;
 use Laracord\Events\Event;
 use App\Models\Mongo\Message as MessageModel;
 
@@ -28,8 +29,16 @@ class RecordReactionAdd extends Event
             return;
         }
 
-        $emoji = $reaction->emoji->id ?? $reaction->emoji->name;
-        $message->emojis = array_merge($message->emojis ?? [], [$emoji]);
+        $emojiRecord = [
+            'remove_all' => false,
+            'is_custom' => $reaction->emoji->id !== null,
+            'react' => true,
+            'burst' => $reaction->burst,
+            'emoji' => $reaction->emoji->id ?? $reaction->emoji->name,
+            'author_id' => $reaction->member->user->id,
+            'created_at' => Date::now(),
+        ];
+        $message->emojis_history = array_merge($message->emojis_history ?? [], [$emojiRecord]);
         $message->save();
     }
 }
