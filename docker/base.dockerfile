@@ -32,7 +32,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && pecl install -f redis uv sodium --with-maximum-processors="$(nproc)" \
     && docker-php-ext-enable redis
 
-RUN pecl install --configureoptions='enable-mongodb-crypto-system-profile="yes" with-mongodb-client-side-encryption="yes" with-mongodb-system-libs="yes"' mongodb --with-maximum-processors="$(nproc)" \
+RUN pecl install --configureoptions='enable-mongodb-crypto-system-profile="yes" with-mongodb-client-side-encryption="yes"' mongodb --with-maximum-processors="$(nproc)" \
     && docker-php-ext-enable mongodb
 
 RUN curl -L -o /tmp/imagick.tar.gz https://github.com/Imagick/imagick/archive/7088edc353f53c4bc644573a79cdcd67a726ae16.tar.gz \
