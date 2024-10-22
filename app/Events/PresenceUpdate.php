@@ -6,9 +6,9 @@ use Discord\Discord;
 use Discord\Parts\WebSockets\PresenceUpdate as DiscordPresenceUpdate;
 use Discord\WebSockets\Event as Events;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Carbon;
 use Laracord\Events\Event;
 use App\Models\Mongo\User as UserModel;
-use App\Models\Mongo\UserStatus as UserStatusModel;
 use App\Models\Mongo\UserActivity as UserActivityModel;
 
 /**
@@ -50,41 +50,75 @@ class PresenceUpdate extends Event
             ]);
         }
 
-        $activities = collect($presence->activities)->map(function ($activity) {
-            return [
-                'name' => $activity->name,
-                'type' => $activity->type,
-                'state' => $activity->name === 'Custom Status' ? $activity->state : null,
-                'emoji' => $activity->emoji ? [
-                    'emoji_id' => $activity->emoji->id,
-                    'name' => $activity->emoji->name,
-                    'animated' => $activity->emoji->animated,
-                ] : null,
+        $activities = collect($presence->activities);
+
+        if ($activities->count() > 0) {
+            $clientStatus = array_values(collect($presence->client_status)->map(function ($value, $name) {
+                return compact('name', 'value');
+            })->toArray());
+
+            $activitiesList = $activities->map(function ($activity) use ($presence, $clientStatus) {
+                $presenceData = [
+                    'guild_id' => $presence->guild_id,
+                    'discord_id' => $presence->user->id,
+                    'presence_type' => 'activity',
+                    'activity_name' => $activity->name === 'Custom Status' ? $activity->state : $activity->name,
+                    'activity_type' => $activity->type,
+                    'activity_emoji' => $activity->emoji ? [
+                        'emoji_id' => $activity->emoji->id,
+                        'name' => $activity->emoji->name,
+                        'animated' => $activity->emoji->animated,
+                    ] : null,
+                    'status_client' => $clientStatus[0]['name'],
+                    'status_state' => $clientStatus[0]['value'],
+                ];
+
+                $presenceData['hash'] = hash('sha256', json_encode($presenceData));
+
+                return $presenceData;
+            });
+
+            $activitiesList->map(function ($activityItem) {
+                $activity = UserActivityModel::where('created_at', '>', Carbon::now()->subMinutes(10))->where('hash', $activityItem['hash'])->first();
+                if (!$activity) {
+                    UserActivityModel::create($activityItem);
+                }
+            });
+
+            return;
+        } else {
+            $clientStatus = array_values(collect($presence->client_status)->map(function ($value, $name) {
+                return compact('name', 'value');
+            })->toArray());
+
+            if (empty($clientStatus)) {
+                $clientStatus = [
+                    [
+                        'name' => 'offline',
+                        'value' => 'offline',
+                    ],
+                ];
+            }
+
+            $presenceData = [
+                'guild_id' => $presence->guild_id,
+                'discord_id' => $presence->user->id,
+                'presence_type' => 'status',
+                'activity_name' => null,
+                'activity_type' => null,
+                'activity_emoji' => null,
+                'status_client' => $clientStatus[0]['name'],
+                'status_state' => $clientStatus[0]['value'],
             ];
-        })->toArray();
 
-        if (!empty($activities)) {
-            UserActivityModel::create([
-                'guild_id' => $presence->guild_id,
-                'discord_id' => $presence->user->id,
-                'activity_name' => $activities[0]['name'],
-                'type' => $activities[0]['type'],
-                'state' => $activities[0]['state'] ?? null,
-                'emoji' => $activities[0]['emoji'] ?? [],
-            ]);
-        }
+            $presenceData['hash'] = hash('sha256', json_encode($presenceData));
 
-        $clientStatus = array_values(collect($presence->client_status)->map(function ($value, $name) {
-            return compact('name', 'value');
-        })->toArray());
+            $activity = UserActivityModel::where('created_at', '>', Carbon::now()->subMinutes(10))->where('hash', $presenceData['hash'])->get();
+            if (!$activity) {
+                UserActivityModel::create($presenceData);
+            }
 
-        if (!empty($clientStatus)) {
-            UserStatusModel::create([
-                'guild_id' => $presence->guild_id,
-                'discord_id' => $presence->user->id,
-                'status' => $clientStatus[0]['value'],
-                'client' => $clientStatus[0]['name'],
-            ]);
+            return;
         }
     }
 }

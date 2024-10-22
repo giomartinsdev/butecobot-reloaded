@@ -10,9 +10,12 @@ class UserActivity extends Model
     protected $fillable = [
         'guild_id',
         'discord_id',
-        'application_id',
+        'presence_type',
+        'activity_name',
         'activity_type',
-        'state',
-        'emoji',
+        'activity_emoji',
+        'status_client',
+        'status_state',
+        'hash',
     ];
 }
