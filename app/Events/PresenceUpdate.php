@@ -35,7 +35,7 @@ class PresenceUpdate extends Event
         if (!$user) {
             $newAvatarUrlQuery = parse_url($presence->user->avatar, PHP_URL_QUERY);
             $newAvatarFilename = basename($presence->user->avatar, '?' . $newAvatarUrlQuery);
-            Storage::put("avatars/{$presence->user->id}/{$newAvatarFilename}", file_get_contents($presence->user->avatar));
+            Storage::put("avatars/{$presence->guild_id}/{$presence->user->id}/{$newAvatarFilename}", file_get_contents($presence->user->avatar));
 
             UserModel::create([
                 'guild_id' => $presence->guild_id,
