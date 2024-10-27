@@ -33,7 +33,11 @@ class RecordMessage extends Event
         if (!$user) {
             $newAvatarUrlQuery = parse_url($message->author->avatar, PHP_URL_QUERY);
             $newAvatarFilename = basename($message->author->avatar, '?' . $newAvatarUrlQuery);
-            Storage::put("avatars/{$message->guild_id}/{$message->user->id}/{$newAvatarFilename}", file_get_contents($message->author->avatar));
+            $newAvatarContent = @file_get_contents($message->author->avatar);
+
+            if ($newAvatarContent) {
+                Storage::put("avatars/{$message->guild_id}/{$message->author->id}/{$newAvatarFilename}", $newAvatarContent);
+            }
 
             UserModel::create([
                 'guild_id' => $message->guild_id,

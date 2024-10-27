@@ -29,7 +29,11 @@ class GuildMemberUpdate extends Event
         if (!$user) {
             $newAvatarUrlQuery = parse_url($member->user->avatar, PHP_URL_QUERY);
             $newAvatarFilename = basename($member->user->avatar, '?' . $newAvatarUrlQuery);
-            Storage::put("avatars/{$member->guild_id}/{$member->user->id}/{$newAvatarFilename}", file_get_contents($member->user->avatar));
+            $newAvatarContent = @file_get_contents($member->user->avatar);
+
+            if ($newAvatarContent) {
+                Storage::put("avatars/{$member->guild_id}/{$member->user->id}/{$newAvatarFilename}", $newAvatarContent);
+            }
 
             UserModel::create([
                 'guild_id' => $member->guild_id,
@@ -67,7 +71,11 @@ class GuildMemberUpdate extends Event
         if ($user->avatar !== $member->user->avatar) {
             $newAvatarUrlQuery = parse_url($member->user->avatar, PHP_URL_QUERY);
             $newAvatarFilename = basename($member->user->avatar, '?' . $newAvatarUrlQuery);
-            Storage::put("avatars/{$member->guild_id}/{$member->user->id}/{$newAvatarFilename}", file_get_contents($member->user->avatar));
+            $newAvatarContent = @file_get_contents($member->user->avatar);
+
+            if ($newAvatarContent) {
+                Storage::put("avatars/{$member->guild_id}/{$member->user->id}/{$newAvatarFilename}", $newAvatarContent);
+            }
 
             $avatarHistoryLog = [
                 'avatar' => $user->avatar_filename,
