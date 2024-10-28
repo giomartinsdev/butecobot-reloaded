@@ -58,8 +58,6 @@ class PhpCowboyCommand extends Command
                     $voice->playFile($audio);
                 });
             }
-
-            return;
         }
 
         return $this
