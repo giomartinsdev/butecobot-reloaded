@@ -23,10 +23,6 @@ class RecordMessageUpdates extends Event
      */
     public function handle(Message $message, Discord $discord, ?Message $oldMessage)
     {
-        if ($message->author->bot) {
-            return;
-        }
-
         $messageRecord = MessageModel::where('message_id', $message->id)->first();
         $history = $messageRecord->content_history ?? [];
 

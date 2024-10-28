@@ -24,10 +24,6 @@ class RecordMessage extends Event
      */
     public function handle(Message $message, Discord $discord)
     {
-        if ($message->author->bot) {
-            return;
-        }
-
         $user = UserModel::where('guild_id', $message->guild_id)->where('discord_id', $message->author->id)->first();
 
         if (!$user) {
