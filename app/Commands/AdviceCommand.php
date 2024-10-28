@@ -45,8 +45,11 @@ class AdviceCommand extends Command
      */
     public function handle($message, $args)
     {
+        $mention = $this->extractDiscordMention($args[0] ?? '');
+        $mentionString = $mention ? "Hey <@{$mention}>" : "Ei você";
+
         return $this
-            ->message("Hey <@{$message->author->id}>, depois dessa lapada aí em cima que tal ver o vídeo completo?")
+            ->message("{$mentionString}, depois dessa lapada aí em cima que tal ver o vídeo completo?")
             ->authorIcon('')
             ->authorName('')
             ->filePath(Storage::path('videos/akita-nao-terceirize.mp4'))
@@ -54,13 +57,13 @@ class AdviceCommand extends Command
             ->send($message);
     }
 
-    /**
-     * The command interaction routes.
-     */
-    public function interactions(): array
-    {
-        return [
-            'wave' => fn (Interaction $interaction) => $this->message('👋')->reply($interaction), 
-        ];
+    private function extractDiscordMention($string) {
+        $pattern = '/<@(\d+)>/';
+
+        if (preg_match($pattern, $string, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
     }
 }
