@@ -46,10 +46,11 @@ class AdviceCommand extends Command
     public function handle($message, $args)
     {
         return $this
-            ->message("Hey <@{$message->author->id}>, depois dessa lapada aí em cima que tal ver o vídeo completo? Vídeo completo: https://www.youtube.com/watch?v=D3L8IOncLkg")
+            ->message("Hey <@{$message->author->id}>, depois dessa lapada aí em cima que tal ver o vídeo completo?")
             ->authorIcon('')
             ->authorName('')
             ->filePath(Storage::path('videos/akita-nao-terceirize.mp4'))
+            ->button('Vídeo completo', 'https://www.youtube.com/watch?v=D3L8IOncLkg', emoji: '▶️')
             ->send($message);
     }
 
