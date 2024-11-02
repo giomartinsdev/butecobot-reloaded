@@ -23,22 +23,22 @@ class RecordReactionAdd extends Event
      */
     public function handle(MessageReaction $reaction, Discord $discord)
     {
-        $message = MessageModel::where('message_id', $reaction->message_id)->first();
+        // $message = MessageModel::where('message_id', $reaction->message_id)->first();
 
-        if (!$message) {
-            return;
-        }
+        // if (!$message) {
+        //     return;
+        // }
 
-        $emojiRecord = [
-            'remove_all' => false,
-            'is_custom' => $reaction->emoji->id !== null,
-            'react' => true,
-            'burst' => $reaction->burst,
-            'emoji' => $reaction->emoji->id ?? $reaction->emoji->name,
-            'author_id' => $reaction->member->user->id,
-            'created_at' => Date::now(),
-        ];
-        $message->emojis_history = array_merge($message->emojis_history ?? [], [$emojiRecord]);
-        $message->save();
+        // $emojiRecord = [
+        //     'remove_all' => false,
+        //     'is_custom' => $reaction->emoji->id !== null,
+        //     'react' => true,
+        //     'burst' => $reaction->burst,
+        //     'emoji' => $reaction->emoji->id ?? $reaction->emoji->name,
+        //     'author_id' => $reaction->member->user->id,
+        //     'created_at' => Date::now(),
+        // ];
+        // $message->emojis_history = array_merge($message->emojis_history ?? [], [$emojiRecord]);
+        // $message->save();
     }
 }
