@@ -26,8 +26,8 @@ class RecordMessageDelete extends Event
 
     public function handler(object $message, Discord $discord)
     {
-        $message = MessageModel::where('message_id', $message->id)->first();
-        $message->deleted = true;
-        $message->save();
+        // $message = MessageModel::where('message_id', $message->id)->first();
+        // $message->deleted = true;
+        // $message->save();
     }
 }
