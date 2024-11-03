@@ -30,99 +30,104 @@ class PresenceUpdate extends Event
      */
     public function handle(DiscordPresenceUpdate $presence, Discord $discord)
     {
-        // $user = UserModel::where('guild_id', $presence->guild_id)->where('discord_id', $presence->user->id)->first();
+        $this->bot->async(fn () => $this->handler($presence, $discord));
+    }
 
-        // if (!$user) {
-        //     $newAvatarUrlQuery = parse_url($presence->user->avatar, PHP_URL_QUERY);
-        //     $newAvatarFilename = basename($presence->user->avatar, '?' . $newAvatarUrlQuery);
-        //     $newAvatarContent = @file_get_contents($presence->user->avatar);
+    public function handler(DiscordPresenceUpdate $presence, Discord $discord)
+    {
+        $user = UserModel::where('guild_id', $presence->guild_id)->where('discord_id', $presence->user->id)->first();
 
-        //     if ($newAvatarContent) {
-        //         Storage::put("avatars/{$presence->guild_id}/{$presence->user->id}/{$newAvatarFilename}", $newAvatarContent);
-        //     }
+        if (!$user) {
+            $newAvatarUrlQuery = parse_url($presence->user->avatar, PHP_URL_QUERY);
+            $newAvatarFilename = basename($presence->user->avatar, '?' . $newAvatarUrlQuery);
+            $newAvatarContent = @file_get_contents($presence->user->avatar);
 
-        //     UserModel::create([
-        //         'guild_id' => $presence->guild_id,
-        //         'discord_id' => $presence->user->id,
-        //         'username' => $presence->user->username,
-        //         'global_name' => $presence->user->global_name,
-        //         'avatar' => $presence->user->avatar,
-        //         'avatar_filename' => $newAvatarFilename,
-        //         'username_history' => [],
-        //         'global_name_history' => [],
-        //         'avatar_history' => [],
-        //     ]);
-        // }
+            if ($newAvatarContent) {
+                Storage::put("avatars/{$presence->guild_id}/{$presence->user->id}/{$newAvatarFilename}", $newAvatarContent);
+            }
 
-        // $activities = collect($presence->activities);
+            UserModel::create([
+                'guild_id' => $presence->guild_id,
+                'discord_id' => $presence->user->id,
+                'username' => $presence->user->username,
+                'global_name' => $presence->user->global_name,
+                'avatar' => $presence->user->avatar,
+                'avatar_filename' => $newAvatarFilename,
+                'username_history' => [],
+                'global_name_history' => [],
+                'avatar_history' => [],
+            ]);
+        }
 
-        // if ($activities->count() > 0) {
-        //     $clientStatus = array_values(collect($presence->client_status)->map(function ($value, $name) {
-        //         return compact('name', 'value');
-        //     })->toArray());
+        $activities = collect($presence->activities);
 
-        //     $activitiesList = $activities->map(function ($activity) use ($presence, $clientStatus) {
-        //         $presenceData = [
-        //             'guild_id' => $presence->guild_id,
-        //             'discord_id' => $presence->user->id,
-        //             'presence_type' => 'activity',
-        //             'activity_name' => $activity->name === 'Custom Status' ? $activity->state : $activity->name,
-        //             'activity_type' => $activity->type,
-        //             'activity_emoji' => $activity->emoji ? [
-        //                 'emoji_id' => $activity->emoji->id,
-        //                 'name' => $activity->emoji->name,
-        //                 'animated' => $activity->emoji->animated,
-        //             ] : null,
-        //             'status_client' => $clientStatus[0]['name'],
-        //             'status_state' => $clientStatus[0]['value'],
-        //         ];
+        if ($activities->count() > 0) {
+            $clientStatus = array_values(collect($presence->client_status)->map(function ($value, $name) {
+                return compact('name', 'value');
+            })->toArray());
 
-        //         $presenceData['hash'] = hash('sha256', json_encode($presenceData));
+            $activitiesList = $activities->map(function ($activity) use ($presence, $clientStatus) {
+                $presenceData = [
+                    'guild_id' => $presence->guild_id,
+                    'discord_id' => $presence->user->id,
+                    'presence_type' => 'activity',
+                    'activity_name' => $activity->name === 'Custom Status' ? $activity->state : $activity->name,
+                    'activity_type' => $activity->type,
+                    'activity_emoji' => $activity->emoji ? [
+                        'emoji_id' => $activity->emoji->id,
+                        'name' => $activity->emoji->name,
+                        'animated' => $activity->emoji->animated,
+                    ] : null,
+                    'status_client' => $clientStatus[0]['name'],
+                    'status_state' => $clientStatus[0]['value'],
+                ];
 
-        //         return $presenceData;
-        //     });
+                $presenceData['hash'] = hash('sha256', json_encode($presenceData));
 
-        //     $activitiesList->map(function ($activityItem) {
-        //         $activity = UserActivityModel::where('created_at', '>', Carbon::now()->subMinutes(10))->where('hash', $activityItem['hash'])->first();
-        //         if (!$activity) {
-        //             UserActivityModel::create($activityItem);
-        //         }
-        //     });
+                return $presenceData;
+            });
 
-        //     return;
-        // } else {
-        //     $clientStatus = array_values(collect($presence->client_status)->map(function ($value, $name) {
-        //         return compact('name', 'value');
-        //     })->toArray());
+            $activitiesList->map(function ($activityItem) {
+                $activity = UserActivityModel::where('created_at', '>', Carbon::now()->subMinutes(10))->where('hash', $activityItem['hash'])->first();
+                if (!$activity) {
+                    UserActivityModel::create($activityItem);
+                }
+            });
 
-        //     if (empty($clientStatus)) {
-        //         $clientStatus = [
-        //             [
-        //                 'name' => 'offline',
-        //                 'value' => 'offline',
-        //             ],
-        //         ];
-        //     }
+            return;
+        } else {
+            $clientStatus = array_values(collect($presence->client_status)->map(function ($value, $name) {
+                return compact('name', 'value');
+            })->toArray());
 
-        //     $presenceData = [
-        //         'guild_id' => $presence->guild_id,
-        //         'discord_id' => $presence->user->id,
-        //         'presence_type' => 'status',
-        //         'activity_name' => null,
-        //         'activity_type' => null,
-        //         'activity_emoji' => null,
-        //         'status_client' => $clientStatus[0]['name'],
-        //         'status_state' => $clientStatus[0]['value'],
-        //     ];
+            if (empty($clientStatus)) {
+                $clientStatus = [
+                    [
+                        'name' => 'offline',
+                        'value' => 'offline',
+                    ],
+                ];
+            }
 
-        //     $presenceData['hash'] = hash('sha256', json_encode($presenceData));
+            $presenceData = [
+                'guild_id' => $presence->guild_id,
+                'discord_id' => $presence->user->id,
+                'presence_type' => 'status',
+                'activity_name' => null,
+                'activity_type' => null,
+                'activity_emoji' => null,
+                'status_client' => $clientStatus[0]['name'],
+                'status_state' => $clientStatus[0]['value'],
+            ];
 
-        //     $activity = UserActivityModel::where('created_at', '>', Carbon::now()->subMinutes(10))->where('hash', $presenceData['hash'])->get();
-        //     if (!$activity) {
-        //         UserActivityModel::create($presenceData);
-        //     }
+            $presenceData['hash'] = hash('sha256', json_encode($presenceData));
 
-        //     return;
-        // }
+            $activity = UserActivityModel::where('created_at', '>', Carbon::now()->subMinutes(10))->where('hash', $presenceData['hash'])->get();
+            if (!$activity) {
+                UserActivityModel::create($presenceData);
+            }
+
+            return;
+        }
     }
 }

@@ -24,72 +24,77 @@ class RecordMessage extends Event
      */
     public function handle(Message $message, Discord $discord)
     {
-        // $user = UserModel::where('guild_id', $message->guild_id)->where('discord_id', $message->author->id)->first();
+        $this->bot->async(fn () => $this->handler($message));
+    }
 
-        // if (!$user) {
-        //     $newAvatarUrlQuery = parse_url($message->author->avatar, PHP_URL_QUERY);
-        //     $newAvatarFilename = basename($message->author->avatar, '?' . $newAvatarUrlQuery);
-        //     $newAvatarContent = @file_get_contents($message->author->avatar);
+    public function handler(Message $message)
+    {
+        $user = UserModel::where('guild_id', $message->guild_id)->where('discord_id', $message->author->id)->first();
 
-        //     if ($newAvatarContent) {
-        //         Storage::put("avatars/{$message->guild_id}/{$message->author->id}/{$newAvatarFilename}", $newAvatarContent);
-        //     }
+        if (!$user) {
+            $newAvatarUrlQuery = parse_url($message->author->avatar, PHP_URL_QUERY);
+            $newAvatarFilename = basename($message->author->avatar, '?' . $newAvatarUrlQuery);
+            $newAvatarContent = @file_get_contents($message->author->avatar);
 
-        //     UserModel::create([
-        //         'guild_id' => $message->guild_id,
-        //         'discord_id' => $message->author->id,
-        //         'username' => $message->author->username,
-        //         'global_name' => $message->author->global_name,
-        //         'avatar' => $message->author->avatar,
-        //         'avatar_filename' => $newAvatarFilename,
-        //         'username_history' => [],
-        //         'global_name_history' => [],
-        //         'avatar_history' => [],
-        //     ]);
-        // }
+            if ($newAvatarContent) {
+                Storage::put("avatars/{$message->guild_id}/{$message->author->id}/{$newAvatarFilename}", $newAvatarContent);
+            }
 
-        // $stickerItems = $message->sticker_items !== null ? $message->sticker_items->toArray() : [];
-        // $attachments = $message->attachments !== null ? $message->attachments->toArray() : [];
+            UserModel::create([
+                'guild_id' => $message->guild_id,
+                'discord_id' => $message->author->id,
+                'username' => $message->author->username,
+                'global_name' => $message->author->global_name,
+                'avatar' => $message->author->avatar,
+                'avatar_filename' => $newAvatarFilename,
+                'username_history' => [],
+                'global_name_history' => [],
+                'avatar_history' => [],
+            ]);
+        }
 
-        // if (count($stickerItems) > 0) {
-        //     $stickerItems = array_values(
-        //         array_map(function ($stickerItem) {
-        //             return [
-        //                 'sticker_id' => $stickerItem->id,
-        //                 'name' => $stickerItem->name,
-        //                 'format_type' => $stickerItem->format_type,
-        //             ];
-        //         }, $stickerItems)
-        //     );
-        // }
+        $stickerItems = $message->sticker_items !== null ? $message->sticker_items->toArray() : [];
+        $attachments = $message->attachments !== null ? $message->attachments->toArray() : [];
 
-        // if (count($attachments) > 0) {
-        //     $attachments = array_values(
-        //         array_map(function ($attachment) {
-        //             return [
-        //                 'attachment_id' => $attachment->id,
-        //                 'url' => $attachment->url,
-        //                 'type' => $attachment->content_type,
-        //                 'filename' => $attachment->filename,
-        //                 'size' => $attachment->size,
-        //             ];
-        //         }, $attachments)
-        //     );
-        // }
+        if (count($stickerItems) > 0) {
+            $stickerItems = array_values(
+                array_map(function ($stickerItem) {
+                    return [
+                        'sticker_id' => $stickerItem->id,
+                        'name' => $stickerItem->name,
+                        'format_type' => $stickerItem->format_type,
+                    ];
+                }, $stickerItems)
+            );
+        }
 
-        // MessageModel::create([
-        //     'guild_id' => $message->guild_id,
-        //     'message_id' => $message->id,
-        //     'discord_id' => $message->author->id,
-        //     'channel_id' => $message->channel->id,
-        //     'channel' => $message->channel->name,
-        //     'username' => $message->author->username,
-        //     'content' => $message->content,
-        //     'content_history' => [],
-        //     'emojis_history' => [],
-        //     'sticker_items' => $stickerItems,
-        //     'attachments' => $attachments,
-        //     'deleted' => false,
-        // ]);
+        if (count($attachments) > 0) {
+            $attachments = array_values(
+                array_map(function ($attachment) {
+                    return [
+                        'attachment_id' => $attachment->id,
+                        'url' => $attachment->url,
+                        'type' => $attachment->content_type,
+                        'filename' => $attachment->filename,
+                        'size' => $attachment->size,
+                    ];
+                }, $attachments)
+            );
+        }
+
+        MessageModel::create([
+            'guild_id' => $message->guild_id,
+            'message_id' => $message->id,
+            'discord_id' => $message->author->id,
+            'channel_id' => $message->channel->id,
+            'channel' => $message->channel->name,
+            'username' => $message->author->username,
+            'content' => $message->content,
+            'content_history' => [],
+            'emojis_history' => [],
+            'sticker_items' => $stickerItems,
+            'attachments' => $attachments,
+            'deleted' => false,
+        ]);
     }
 }

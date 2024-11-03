@@ -24,68 +24,73 @@ class GuildMemberUpdate extends Event
      */
     public function handle(Member $member, Discord $discord, ?Member $oldMember)
     {
-        // $user = UserModel::where('guild_id', $member->guild_id)->where('discord_id', $member->user->id)->first();
+        $this->bot->async(fn () => $this->handler($member, $discord, $oldMember));
+    }
 
-        // if (!$user) {
-        //     $newAvatarUrlQuery = parse_url($member->user->avatar, PHP_URL_QUERY);
-        //     $newAvatarFilename = basename($member->user->avatar, '?' . $newAvatarUrlQuery);
-        //     $newAvatarContent = @file_get_contents($member->user->avatar);
+    public function handler(Member $member, Discord $discord, ?Member $oldMember)
+    {
+        $user = UserModel::where('guild_id', $member->guild_id)->where('discord_id', $member->user->id)->first();
 
-        //     if ($newAvatarContent) {
-        //         Storage::put("avatars/{$member->guild_id}/{$member->user->id}/{$newAvatarFilename}", $newAvatarContent);
-        //     }
+        if (!$user) {
+            $newAvatarUrlQuery = parse_url($member->user->avatar, PHP_URL_QUERY);
+            $newAvatarFilename = basename($member->user->avatar, '?' . $newAvatarUrlQuery);
+            $newAvatarContent = @file_get_contents($member->user->avatar);
 
-        //     UserModel::create([
-        //         'guild_id' => $member->guild_id,
-        //         'discord_id' => $member->user->id,
-        //         'username' => $member->user->username,
-        //         'global_name' => $member->user->global_name,
-        //         'avatar' => $member->user->avatar,
-        //         'avatar_filename' => $newAvatarFilename,
-        //         'username_history' => [],
-        //         'global_name_history' => [],
-        //         'avatar_history' => [],
-        //     ]);
+            if ($newAvatarContent) {
+                Storage::put("avatars/{$member->guild_id}/{$member->user->id}/{$newAvatarFilename}", $newAvatarContent);
+            }
 
-        //     return;
-        // }
+            UserModel::create([
+                'guild_id' => $member->guild_id,
+                'discord_id' => $member->user->id,
+                'username' => $member->user->username,
+                'global_name' => $member->user->global_name,
+                'avatar' => $member->user->avatar,
+                'avatar_filename' => $newAvatarFilename,
+                'username_history' => [],
+                'global_name_history' => [],
+                'avatar_history' => [],
+            ]);
 
-        // if ($user->username !== $member->user->username) {
-        //     $usernameHistoryLog = [
-        //         'username' => $user->username,
-        //         'created_at' => Date::now(),
-        //     ];
-        //     $user->username = $member->user->username;
-        //     $user->username_history = array_merge($user->username_history ?? [], [$usernameHistoryLog]);
-        // }
+            return;
+        }
 
-        // if ($user->global_name !== $member->user->global_name) {
-        //     $globalNameHistoryLog = [
-        //         'global_name' => $member->user->global_name,
-        //         'created_at' => Date::now(),
-        //     ];
-        //     $user->global_name = $member->user->global_name;
-        //     $user->global_name_history = array_merge($user->global_name_history ?? [], [$globalNameHistoryLog]);
-        // }
+        if ($user->username !== $member->user->username) {
+            $usernameHistoryLog = [
+                'username' => $user->username,
+                'created_at' => Date::now(),
+            ];
+            $user->username = $member->user->username;
+            $user->username_history = array_merge($user->username_history ?? [], [$usernameHistoryLog]);
+        }
 
-        // if ($user->avatar !== $member->user->avatar) {
-        //     $newAvatarUrlQuery = parse_url($member->user->avatar, PHP_URL_QUERY);
-        //     $newAvatarFilename = basename($member->user->avatar, '?' . $newAvatarUrlQuery);
-        //     $newAvatarContent = @file_get_contents($member->user->avatar);
+        if ($user->global_name !== $member->user->global_name) {
+            $globalNameHistoryLog = [
+                'global_name' => $member->user->global_name,
+                'created_at' => Date::now(),
+            ];
+            $user->global_name = $member->user->global_name;
+            $user->global_name_history = array_merge($user->global_name_history ?? [], [$globalNameHistoryLog]);
+        }
 
-        //     if ($newAvatarContent) {
-        //         Storage::put("avatars/{$member->guild_id}/{$member->user->id}/{$newAvatarFilename}", $newAvatarContent);
-        //     }
+        if ($user->avatar !== $member->user->avatar) {
+            $newAvatarUrlQuery = parse_url($member->user->avatar, PHP_URL_QUERY);
+            $newAvatarFilename = basename($member->user->avatar, '?' . $newAvatarUrlQuery);
+            $newAvatarContent = @file_get_contents($member->user->avatar);
 
-        //     $avatarHistoryLog = [
-        //         'avatar' => $user->avatar_filename,
-        //         'created_at' => Date::now(),
-        //     ];
-        //     $user->avatar = $member->user->avatar;
-        //     $user->avatar_filename = $newAvatarFilename;
-        //     $user->avatar_history = array_merge($user->avatar_history ?? [], [$avatarHistoryLog]);
-        // }
+            if ($newAvatarContent) {
+                Storage::put("avatars/{$member->guild_id}/{$member->user->id}/{$newAvatarFilename}", $newAvatarContent);
+            }
 
-        // $user->save();
+            $avatarHistoryLog = [
+                'avatar' => $user->avatar_filename,
+                'created_at' => Date::now(),
+            ];
+            $user->avatar = $member->user->avatar;
+            $user->avatar_filename = $newAvatarFilename;
+            $user->avatar_history = array_merge($user->avatar_history ?? [], [$avatarHistoryLog]);
+        }
+
+        $user->save();
     }
 }

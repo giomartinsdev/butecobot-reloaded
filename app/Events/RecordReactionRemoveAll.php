@@ -23,21 +23,26 @@ class RecordReactionRemoveAll extends Event
      */
     public function handle(MessageReaction $reaction, Discord $discord)
     {
-        // $message = MessageModel::where('message_id', $reaction->message_id)->first();
+        $this->bot->async(fn () => $this->handler($reaction, $discord));
+    }
 
-        // if (!$message) {
-        //     return;
-        // }
+    public function handler(MessageReaction $reaction, Discord $discord)
+    {
+        $message = MessageModel::where('message_id', $reaction->message_id)->first();
 
-        // $emojiRecord = [
-        //     'remove_all' => true,
-        //     'is_custom' => false,
-        //     'react' => false,
-        //     'emoji' => null,
-        //     'author_id' => null,
-        //     'created_at' => Date::now(),
-        // ];
-        // $message->emojis_history = array_merge($message->emojis_history ?? [], [$emojiRecord]);
-        // $message->save();
+        if (!$message) {
+            return;
+        }
+
+        $emojiRecord = [
+            'remove_all' => true,
+            'is_custom' => false,
+            'react' => false,
+            'emoji' => null,
+            'author_id' => null,
+            'created_at' => Date::now(),
+        ];
+        $message->emojis_history = array_merge($message->emojis_history ?? [], [$emojiRecord]);
+        $message->save();
     }
 }

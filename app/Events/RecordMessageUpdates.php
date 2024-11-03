@@ -23,19 +23,24 @@ class RecordMessageUpdates extends Event
      */
     public function handle(Message $message, Discord $discord, ?Message $oldMessage)
     {
-        // $messageRecord = MessageModel::where('message_id', $message->id)->first();
-        // $history = $messageRecord->content_history ?? [];
+        $this->bot->async(fn () => $this->handler($message, $discord, $oldMessage));
+    }
 
-        // if (!empty($messageRecord->content)) {
-        //     $oldMessageHistory = [
-        //         'content' => $messageRecord->content,
-        //         'created_at' => Date::now(),
-        //     ];
-        //     $history = array_merge($history, [ $oldMessageHistory ]);
-        // }
+    public function handler(Message $message, Discord $discord, ?Message $oldMessage)
+    {
+        $messageRecord = MessageModel::where('message_id', $message->id)->first();
+        $history = $messageRecord->content_history ?? [];
 
-        // $messageRecord->content = $message->content;
-        // $messageRecord->content_history = $history;
-        // $messageRecord->save();
+        if (!empty($messageRecord->content)) {
+            $oldMessageHistory = [
+                'content' => $messageRecord->content,
+                'created_at' => Date::now(),
+            ];
+            $history = array_merge($history, [ $oldMessageHistory ]);
+        }
+
+        $messageRecord->content = $message->content;
+        $messageRecord->content_history = $history;
+        $messageRecord->save();
     }
 }
