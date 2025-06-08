@@ -32,7 +32,7 @@ class ChorumeBot(commands.Bot):
         super().__init__(
             command_prefix='!',
             intents=intents,
-            description="Chorume Bot - Economy and Management System"
+            description="Chorume Bot - Sistema de Economia e Gerenciamento"
         )
         
     async def setup_hook(self):
@@ -51,7 +51,7 @@ class ChorumeBot(commands.Bot):
         # Set bot status
         activity = discord.Activity(
             type=discord.ActivityType.watching,
-            name="the economy 💰"
+            name="a economia 💰"
         )
         await self.change_presence(activity=activity)
 
@@ -93,7 +93,7 @@ async def get_or_create_user(discord_id: str, username: str) -> Optional[dict]:
                 return data
     return None
 
-@bot.tree.command(name="register", description="Register yourself in the economy system")
+@bot.tree.command(name="register", description="Registre-se no sistema de economia")
 async def register(interaction: discord.Interaction):
     """Register a user in the system."""
     await interaction.response.defer()
@@ -102,23 +102,23 @@ async def register(interaction: discord.Interaction):
     
     if user:
         embed = discord.Embed(
-            title="✅ Registration Successful!",
-            description=f"Welcome to the Chorume Economy, {interaction.user.mention}!",
+            title="✅ Registro Realizado com Sucesso!",
+            description=f"Bem-vindo à Economia Chorume, {interaction.user.mention}!",
             color=discord.Color.green()
         )
-        embed.add_field(name="User ID", value=user.get('id', 'Unknown'), inline=False)
-        embed.add_field(name="Discord ID", value=user.get('discordId', 'Unknown'), inline=True)
-        embed.add_field(name="Name", value=user.get('name', 'Unknown'), inline=True)
+        embed.add_field(name="ID do Usuário", value=user.get('id', 'Desconhecido'), inline=False)
+        embed.add_field(name="Discord ID", value=user.get('discordId', 'Desconhecido'), inline=True)
+        embed.add_field(name="Nome", value=user.get('name', 'Desconhecido'), inline=True)
     else:
         embed = discord.Embed(
-            title="❌ Registration Failed",
-            description="Failed to register. Please try again later.",
+            title="❌ Falha no Registro",
+            description="Falha ao registrar. Tente novamente mais tarde.",
             color=discord.Color.red()
         )
     
     await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="balance", description="Check your current balance")
+@bot.tree.command(name="balance", description="Verifique seu saldo atual")
 async def balance(interaction: discord.Interaction, user: Optional[discord.Member] = None):
     """Check balance for yourself or another user."""
     await interaction.response.defer()
@@ -130,8 +130,8 @@ async def balance(interaction: discord.Interaction, user: Optional[discord.Membe
     user_data = await get_or_create_user(discord_id, target_user.display_name)
     if not user_data:
         embed = discord.Embed(
-            title="❌ User Not Found",
-            description="User is not registered in the system.",
+            title="❌ Usuário Não Encontrado",
+            description="Usuário não está registrado no sistema.",
             color=discord.Color.red()
         )
         await interaction.followup.send(embed=embed)
@@ -146,25 +146,25 @@ async def balance(interaction: discord.Interaction, user: Optional[discord.Membe
         if status == 200:
             balance_amount = balance_data.get('balance', 0)
             embed = discord.Embed(
-                title="💰 Balance Information",
+                title="💰 Informações do Saldo",
                 color=discord.Color.blue()
             )
             embed.add_field(
-                name=f"{target_user.display_name}'s Balance",
-                value=f"**{balance_amount:,} coins** 🪙",
+                name=f"Saldo de {target_user.display_name}",
+                value=f"**{balance_amount:,} moedas** 🪙",
                 inline=False
             )
             embed.set_thumbnail(url=target_user.display_avatar.url)
         else:
             embed = discord.Embed(
-                title="❌ Error",
-                description="Failed to retrieve balance information.",
+                title="❌ Erro",
+                description="Falha ao obter informações do saldo.",
                 color=discord.Color.red()
             )
     
     await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="daily", description="Claim your daily coins")
+@bot.tree.command(name="daily", description="Colete suas moedas diárias")
 async def daily(interaction: discord.Interaction):
     """Claim daily coins."""
     await interaction.response.defer()
@@ -191,35 +191,35 @@ async def daily(interaction: discord.Interaction):
         if status == 200:
             amount = response.get('amount', 0)
             embed = discord.Embed(
-                title="🎉 Daily Coins Claimed!",
-                description=f"You've received **{amount:,} coins**! 🪙",
+                title="🎉 Moedas Diárias Coletadas!",
+                description=f"Você recebeu **{amount:,} moedas**! 🪙",
                 color=discord.Color.gold()
             )
             embed.add_field(
-                name="Next Claim",
-                value="Come back tomorrow for more coins!",
+                name="Próxima Coleta",
+                value="Volte amanhã para mais moedas!",
                 inline=False
             )
         elif status == 400:
             embed = discord.Embed(
-                title="⏰ Already Claimed",
-                description="You've already claimed your daily coins today!\nCome back tomorrow! ⏰",
+                title="⏰ Já Coletado",
+                description="Você já coletou suas moedas diárias hoje!\nVolte amanhã! ⏰",
                 color=discord.Color.orange()
             )
         else:
             embed = discord.Embed(
-                title="❌ Error",
-                description="Failed to claim daily coins. Please try again later.",
+                title="❌ Erro",
+                description="Falha ao coletar moedas diárias. Tente novamente mais tarde.",
                 color=discord.Color.red()
             )
     
     await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="transfer", description="Transfer coins to another user")
+@bot.tree.command(name="transfer", description="Transfira moedas para outro usuário")
 @app_commands.describe(
-    recipient="The user to transfer coins to",
-    amount="Amount of coins to transfer",
-    description="Optional description for the transfer"
+    recipient="O usuário para quem transferir moedas",
+    amount="Quantidade de moedas para transferir",
+    description="Descrição opcional para a transferência"
 )
 async def transfer(interaction: discord.Interaction, recipient: discord.Member, amount: int, description: str = "Transfer"):
     """Transfer coins between users."""
@@ -227,8 +227,8 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
     
     if amount <= 0:
         embed = discord.Embed(
-            title="❌ Invalid Amount",
-            description="Transfer amount must be positive!",
+            title="❌ Valor Inválido",
+            description="O valor da transferência deve ser positivo!",
             color=discord.Color.red()
         )
         await interaction.followup.send(embed=embed)
@@ -236,8 +236,8 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
     
     if recipient.id == interaction.user.id:
         embed = discord.Embed(
-            title="❌ Invalid Transfer",
-            description="You cannot transfer coins to yourself!",
+            title="❌ Transferência Inválida",
+            description="Você não pode transferir moedas para si mesmo!",
             color=discord.Color.red()
         )
         await interaction.followup.send(embed=embed)
@@ -249,8 +249,8 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
     
     if not sender or not receiver:
         embed = discord.Embed(
-            title="❌ User Not Found",
-            description="One or both users are not registered.",
+            title="❌ Usuário Não Encontrado",
+            description="Um ou ambos os usuários não estão registrados.",
             color=discord.Color.red()
         )
         await interaction.followup.send(embed=embed)
@@ -264,8 +264,8 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
         
         if status != 200:
             embed = discord.Embed(
-                title="❌ Error",
-                description="Failed to check balance.",
+                title="❌ Erro",
+                description="Falha ao verificar saldo.",
                 color=discord.Color.red()
             )
             await interaction.followup.send(embed=embed)
@@ -274,8 +274,8 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
         current_balance = balance_data.get('balance', 0)
         if current_balance < amount:
             embed = discord.Embed(
-                title="❌ Insufficient Funds",
-                description=f"You have {current_balance:,} coins, but need {amount:,} coins.",
+                title="❌ Saldo Insuficiente",
+                description=f"Você tem {current_balance:,} moedas, mas precisa de {amount:,} moedas.",
                 color=discord.Color.red()
             )
             await interaction.followup.send(embed=embed)
@@ -295,23 +295,23 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
         
         if status == 200:
             embed = discord.Embed(
-                title="✅ Transfer Successful!",
-                description=f"Transferred **{amount:,} coins** to {recipient.mention}",
+                title="✅ Transferência Realizada com Sucesso!",
+                description=f"Transferiu **{amount:,} moedas** para {recipient.mention}",
                 color=discord.Color.green()
             )
-            embed.add_field(name="Description", value=description, inline=False)
-            embed.add_field(name="Remaining Balance", value=f"{current_balance - amount:,} coins", inline=True)
+            embed.add_field(name="Descrição", value=description, inline=False)
+            embed.add_field(name="Saldo Restante", value=f"{current_balance - amount:,} moedas", inline=True)
         else:
             embed = discord.Embed(
-                title="❌ Transfer Failed",
-                description="Failed to complete the transfer. Please try again.",
+                title="❌ Falha na Transferência",
+                description="Falha ao completar a transferência. Tente novamente.",
                 color=discord.Color.red()
             )
     
     await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="leaderboard", description="Show the top users by balance")
-@app_commands.describe(limit="Number of users to show (max 20)")
+@bot.tree.command(name="leaderboard", description="Mostre os melhores usuários por saldo")
+@app_commands.describe(limit="Número de usuários para mostrar (máximo 20)")
 async def leaderboard(interaction: discord.Interaction, limit: int = 10):
     """Show leaderboard of users by balance."""
     await interaction.response.defer()
@@ -327,8 +327,8 @@ async def leaderboard(interaction: discord.Interaction, limit: int = 10):
         
         if status != 200:
             embed = discord.Embed(
-                title="❌ Error",
-                description="Failed to retrieve user data.",
+                title="❌ Erro",
+                description="Falha ao obter dados dos usuários.",
                 color=discord.Color.red()
             )
             await interaction.followup.send(embed=embed)
@@ -348,7 +348,7 @@ async def leaderboard(interaction: discord.Interaction, limit: int = 10):
         user_balances.sort(key=lambda x: x[1], reverse=True)
         
         embed = discord.Embed(
-            title="🏆 Leaderboard - Top Users",
+            title="🏆 Ranking - Melhores Usuários",
             color=discord.Color.gold()
         )
         
@@ -366,17 +366,17 @@ async def leaderboard(interaction: discord.Interaction, limit: int = 10):
             
             embed.add_field(
                 name=f"{medal} {display_name}",
-                value=f"{balance:,} coins 🪙",
+                value=f"{balance:,} moedas 🪙",
                 inline=True
             )
         
         if not user_balances:
-            embed.description = "No users found in the leaderboard."
+            embed.description = "Nenhum usuário encontrado no ranking."
     
     await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="history", description="View your transaction history")
-@app_commands.describe(limit="Number of transactions to show (max 50)")
+@bot.tree.command(name="history", description="Veja seu histórico de transações")
+@app_commands.describe(limit="Número de transações para mostrar (máximo 50)")
 async def history(interaction: discord.Interaction, limit: int = 10):
     """Show user's transaction history."""
     await interaction.response.defer()
@@ -391,8 +391,8 @@ async def history(interaction: discord.Interaction, limit: int = 10):
     
     if not user_data:
         embed = discord.Embed(
-            title="❌ Registration Required",
-            description="Please use `/register` first!",
+            title="❌ Registro Necessário",
+            description="Use `/register` primeiro!",
             color=discord.Color.red()
         )
         await interaction.followup.send(embed=embed)
@@ -406,16 +406,16 @@ async def history(interaction: discord.Interaction, limit: int = 10):
         
         if status != 200:
             embed = discord.Embed(
-                title="❌ Error",
-                description="Failed to retrieve transaction history.",
+                title="❌ Erro",
+                description="Falha ao obter histórico de transações.",
                 color=discord.Color.red()
             )
             await interaction.followup.send(embed=embed)
             return
         
         embed = discord.Embed(
-            title="📊 Transaction History",
-            description=f"Last {min(len(operations), limit)} transactions",
+            title="📊 Histórico de Transações",
+            description=f"Últimas {min(len(operations), limit)} transações",
             color=discord.Color.blue()
         )
         
@@ -424,23 +424,23 @@ async def history(interaction: discord.Interaction, limit: int = 10):
         
         for operation in operations[:limit]:
             amount = operation.get('amount', 0)
-            description = operation.get('description', 'No description')
+            description = operation.get('description', 'Sem descrição')
             created_at = operation.get('createdAt', '')
             
             if amount > 0:
-                amount_str = f"+{amount:,} coins 📈"
+                amount_str = f"+{amount:,} moedas 📈"
                 color_emoji = "🟢"
             else:
-                amount_str = f"{amount:,} coins 📉"
+                amount_str = f"{amount:,} moedas 📉"
                 color_emoji = "🔴"
             
             # Format date
             try:
                 from datetime import datetime
                 dt = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
-                date_str = dt.strftime('%m/%d %H:%M')
+                date_str = dt.strftime('%d/%m %H:%M')
             except:
-                date_str = "Unknown"
+                date_str = "Desconhecido"
             
             embed.add_field(
                 name=f"{color_emoji} {amount_str}",
@@ -449,12 +449,12 @@ async def history(interaction: discord.Interaction, limit: int = 10):
             )
         
         if not operations:
-            embed.description = "No transactions found."
+            embed.description = "Nenhuma transação encontrada."
     
     await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="daily_history", description="View your daily coin claim history")
-@app_commands.describe(limit="Number of claims to show (max 30)")
+@bot.tree.command(name="daily_history", description="Veja seu histórico de coletas diárias")
+@app_commands.describe(limit="Número de coletas para mostrar (máximo 30)")
 async def daily_history(interaction: discord.Interaction, limit: int = 10):
     """Show user's daily claim history."""
     await interaction.response.defer()
@@ -469,8 +469,8 @@ async def daily_history(interaction: discord.Interaction, limit: int = 10):
     
     if not user_data:
         embed = discord.Embed(
-            title="❌ Registration Required",
-            description="Please use `/register` first!",
+            title="❌ Registro Necessário",
+            description="Use `/register` primeiro!",
             color=discord.Color.red()
         )
         await interaction.followup.send(embed=embed)
@@ -483,8 +483,8 @@ async def daily_history(interaction: discord.Interaction, limit: int = 10):
         
         if status != 200:
             embed = discord.Embed(
-                title="❌ Error",
-                description="Failed to retrieve daily claim history.",
+                title="❌ Erro",
+                description="Falha ao obter histórico de coletas diárias.",
                 color=discord.Color.red()
             )
             await interaction.followup.send(embed=embed)
@@ -495,8 +495,8 @@ async def daily_history(interaction: discord.Interaction, limit: int = 10):
         history = history_data.get('history', [])
         
         embed = discord.Embed(
-            title="📅 Daily Claim History",
-            description=f"Total Claims: **{total_claims}** | Total Earned: **{total_earned:,} coins**",
+            title="📅 Histórico de Coletas Diárias",
+            description=f"Total de Coletas: **{total_claims}** | Total Ganho: **{total_earned:,} moedas**",
             color=discord.Color.blue()
         )
         
@@ -513,16 +513,16 @@ async def daily_history(interaction: discord.Interaction, limit: int = 10):
             
             embed.add_field(
                 name=f"🗓️ {date_str}",
-                value=f"+{amount:,} coins 🪙",
+                value=f"+{amount:,} moedas 🪙",
                 inline=True
             )
         
         if not history:
-            embed.description = "No daily claims found. Use `/daily` to start claiming!"
+            embed.description = "Nenhuma coleta diária encontrada. Use `/daily` para começar a coletar!"
     
     await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="status", description="Check the status of all microservices")
+@bot.tree.command(name="status", description="Verifique o status de todos os microserviços")
 async def status(interaction: discord.Interaction):
     """Check the health status of all microservices."""
     await interaction.response.defer()
@@ -534,7 +534,7 @@ async def status(interaction: discord.Interaction):
     ]
     
     embed = discord.Embed(
-        title="🔧 System Status",
+        title="🔧 Status do Sistema",
         color=discord.Color.blue()
     )
     
@@ -559,42 +559,42 @@ async def status(interaction: discord.Interaction):
             )
     
     embed.add_field(
-        name="🤖 Bot Status",
+        name="🤖 Status do Bot",
         value="🟢 Online",
         inline=True
     )
     
     await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="help", description="Show all available commands")
+@bot.tree.command(name="help", description="Mostre todos os comandos disponíveis")
 async def help_command(interaction: discord.Interaction):
     """Show help information."""
     logger.info(f"Help command requested by {interaction.user.display_name} ({interaction.user.id})")
     await interaction.response.defer()
     
     embed = discord.Embed(
-        title="🤖 Chorume Bot - Commands",
-        description="Here are all the available slash commands:",
+        title="🤖 Chorume Bot - Comandos",
+        description="Aqui estão todos os comandos slash disponíveis:",
         color=discord.Color.blue()
     )
     
     commands_info = [
-        ("👤 **User Commands**", ""),
-        ("/register", "Register yourself in the economy system"),
-        ("/balance [user]", "Check your or another user's balance"),
+        ("👤 **Comandos de Usuário**", ""),
+        ("/register", "Registre-se no sistema de economia"),
+        ("/balance [usuário]", "Verifique seu saldo ou de outro usuário"),
         ("", ""),
-        ("💰 **Economy Commands**", ""),
-        ("/daily", "Claim your daily coins (once per day)"),
-        ("/transfer <user> <amount> [description]", "Transfer coins to another user"),
+        ("💰 **Comandos de Economia**", ""),
+        ("/daily", "Colete suas moedas diárias (uma vez por dia)"),
+        ("/transfer <usuário> <valor> [descrição]", "Transfira moedas para outro usuário"),
         ("", ""),
-        ("📊 **Information Commands**", ""),
-        ("/leaderboard [limit]", "Show top users by balance"),
-        ("/history [limit]", "View your transaction history"),
-        ("/daily_history [limit]", "View your daily claim history"),
+        ("📊 **Comandos de Informação**", ""),
+        ("/leaderboard [limite]", "Mostre os melhores usuários por saldo"),
+        ("/history [limite]", "Veja seu histórico de transações"),
+        ("/daily_history [limite]", "Veja seu histórico de coletas diárias"),
         ("", ""),
-        ("🔧 **System Commands**", ""),
-        ("/status", "Check microservices status"),
-        ("/help", "Show this help message"),
+        ("🔧 **Comandos do Sistema**", ""),
+        ("/status", "Verifique o status dos microserviços"),
+        ("/help", "Mostre esta mensagem de ajuda"),
     ]
     
     description_lines = []
@@ -607,8 +607,8 @@ async def help_command(interaction: discord.Interaction):
     embed.description = "\n".join(description_lines)
     
     embed.add_field(
-        name="💡 Tips",
-        value="• Use `/register` before using economy commands\n• Daily coins reset at midnight UTC\n• Check `/status` if something isn't working",
+        name="💡 Dicas",
+        value="• Use `/register` antes de usar comandos de economia\n• Moedas diárias resetam à meia-noite UTC\n• Verifique `/status` se algo não estiver funcionando",
         inline=False
     )
     
@@ -619,7 +619,7 @@ async def help_command(interaction: discord.Interaction):
         logger.error(f"Failed to send help command response: {e}")
         # Fallback to basic response
         try:
-            await interaction.followup.send("Help command is temporarily unavailable. Please try again later.")
+            await interaction.followup.send("Comando de ajuda temporariamente indisponível. Tente novamente mais tarde.")
         except:
             pass
 
@@ -631,17 +631,17 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
     logger.error(f"Command '{command_name}' raised an exception: {error} (User: {user_info})")
     
     embed = discord.Embed(
-        title="❌ Command Error",
-        description="An error occurred while processing your command.",
+        title="❌ Erro no Comando",
+        description="Ocorreu um erro ao processar seu comando.",
         color=discord.Color.red()
     )
     
     if isinstance(error, app_commands.CommandOnCooldown):
-        embed.description = f"Command is on cooldown. Try again in {error.retry_after:.2f} seconds."
+        embed.description = f"Comando em cooldown. Tente novamente em {error.retry_after:.2f} segundos."
     elif isinstance(error, app_commands.MissingPermissions):
-        embed.description = "You don't have permission to use this command."
+        embed.description = "Você não tem permissão para usar este comando."
     else:
-        embed.description = "An unexpected error occurred. Please try again later."
+        embed.description = "Ocorreu um erro inesperado. Tente novamente mais tarde."
     
     try:
         if interaction.response.is_done():
