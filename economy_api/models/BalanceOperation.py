@@ -1,15 +1,25 @@
-class BalanceOperation:
-    def __init__(self, id: str, receiver_id: str, sender_id: str, amount: int, description: str, createdAt: str, updatedAt: str):
-        self.id = id
-        self.receiver_id = receiver_id
-        self.sender_id = sender_id
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, Integer, DateTime
+import uuid
+from datetime import datetime
+
+Base = declarative_base()
+
+class BalanceOperation(Base):
+    __tablename__ = "balance_operation"
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    clientId = Column(String, nullable=False)
+    amount = Column(Integer, nullable=False)
+    description = Column(String, nullable=False)
+    createdAt = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    def __init__(self, clientId: str, amount: int, description: str):
+        self.clientId = clientId
         self.amount = amount
         self.description = description
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
 
     def __repr__(self):
-        return (f"BalanceOperation(id={self.id}, receiver_id={self.receiver_id}, "
-                f"sender_id={self.sender_id}, amount={self.amount}, "
-                f"description={self.description}, createdAt={self.createdAt}, "
-                f"updatedAt={self.updatedAt})")
+        return (f"BalanceOperation(id={self.id}, clientId={self.clientId}, "
+                f"amount={self.amount}, description={self.description}, "
+                f"createdAt={self.createdAt}, updatedAt={self.updatedAt})")

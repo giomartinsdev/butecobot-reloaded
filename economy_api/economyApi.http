@@ -1,46 +1,46 @@
 ### economy-api (http://localhost:5001)
 
-# Add balance operation
+# Add balance operation (credit)
 POST http://localhost:5001/balance/add
 Content-Type: application/json
 
 {
-  "receiver_id": "11111111-1111-1111-1111-111111111111",
-  "sender_id": "22222222-2222-2222-2222-222222222222",
+  "clientId": "b21c0a6d-5d29-43a1-83da-b4e268dc40ae",
   "amount": 100,
   "description": "Initial deposit"
 }
 
 ###
 
-# Subtract balance operation
+# Subtract balance operation (debit)
 POST http://localhost:5001/balance/subtract
 Content-Type: application/json
 
 {
-  "receiver_id": "11111111-1111-1111-1111-111111111111",
-  "sender_id": "22222222-2222-2222-2222-222222222222",
+  "clientId": "b21c0a6d-5d29-43a1-83da-b4e268dc40ae",
   "amount": 50,
   "description": "Purchase"
 }
 
 ###
 
+# Transaction: transfer from sender to receiver
+POST http://localhost:5001/balance/transaction
+Content-Type: application/json
+
+{
+  "senderId": "b21c0a6d-5d29-43a1-83da-b4e268dc40ae",
+  "receiverId": "5f6c55bf-16e6-46e3-acaa-374826fa2df8",
+  "amount": 75,
+  "description": "Payment"
+}
+
+###
+
 # Get user balance
-GET http://localhost:5001/balance/11111111-1111-1111-1111-111111111111
+GET http://localhost:5001/balance/5f6c55bf-16e6-46e3-acaa-374826fa2df8
 
 ###
 
 # Get all operations for a user
-GET http://localhost:5001/balance/operations/11111111-1111-1111-1111-111111111111
-
-###
-
-# Update a balance operation
-PUT http://localhost:5001/balance/operation/33333333-3333-3333-3333-333333333333
-Content-Type: application/json
-
-{
-  "amount": 200,
-  "description": "Updated description"
-}
+GET http://localhost:5001/balance/operations/b21c0a6d-5d29-43a1-83da-b4e268dc40ae

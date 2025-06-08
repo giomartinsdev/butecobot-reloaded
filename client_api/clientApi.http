@@ -3,8 +3,8 @@ POST http://localhost:5000/client/
 Content-Type: application/json
 
 {
-  "discordId": "testdiscorddid123",
-  "name": "Test User"
+  "discordId": "discord123",
+  "name": "second user"
 }
 
 ### Get a client by id
