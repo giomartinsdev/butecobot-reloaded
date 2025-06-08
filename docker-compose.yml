@@ -1,14 +1,14 @@
 services:
 
-  economy-api:
-    build: ./economy_api
-    container_name: economy_api_container
+  balance-api:
+    build: ./balance_api
+    container_name: balance_api_container
     ports:
       - "5001:5000"
-    environment:
-      - DATABASE_URL=postgresql://economyuser:economypass@postgres-db:5432/economydb
     networks:
       - chorume_network
+    env_file:
+      - .env
     restart: unless-stopped
 
   client-api:
@@ -16,33 +16,26 @@ services:
     container_name: client_api_container
     ports:
       - "5000:5000"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - ECONOMY_API_URL=${ECONOMY_API_URL}
-      - DATABASE_ASYNC_URL=${DATABASE_ASYNC_URL}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
     networks:
       - chorume_network
     depends_on:
       - postgres-db
+    env_file:
+      - .env
     restart: unless-stopped
 
 
   chorume-bot:
     build: ./chorume_bot
     container_name: chorume_bot_container
-    environment:
-      - DISCORD_TOKEN=${DISCORD_TOKEN}
-      - ECONOMY_API_URL=http://economy-api:5000
-      - ECONOMY_SERVICE_URL=http://economy-service:3000
     networks:
       - chorume_network
     depends_on:
       - client-api
       - db-migration-service
-      - economy-api
+      - balance-api
+    env_file:
+      - .env
     restart: unless-stopped
 
   postgres-db:
@@ -51,16 +44,18 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=${DB_USER:-economyuser}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:-economypass}
-      - POSTGRES_DB=${DB_NAME:-economydb}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     volumes:
       - economy_data:/var/lib/postgresql/data
     networks:
       - chorume_network
+    env_file:
+      - .env
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-economyuser} -d ${DB_NAME:-economydb}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -73,13 +68,15 @@ services:
     environment:
       - DB_HOST=postgres-db
       - DB_PORT=5432
-      - DB_USER=${DB_USER:-economyuser}
-      - DB_PASSWORD=${DB_PASSWORD:-economypass}
-      - DB_NAME=${DB_NAME:-economydb}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
     networks:
       - chorume_network
     volumes:
       - ./db_migration_service/src/migration:/app/src/migration
+    env_file:
+      - .env
 
 networks:
   chorume_network:
