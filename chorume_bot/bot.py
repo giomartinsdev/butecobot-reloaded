@@ -2,16 +2,13 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import aiohttp
-import asyncio
 import os
 from dotenv import load_dotenv
 import logging
 from typing import Optional
 
-# Load environment variables
 load_dotenv()
 
-# Configuration
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 BALANCE_API_URL = os.getenv('BALANCE_API_URL', 'http://balance-api:5000')
 CLIENT_API_URL = os.getenv('CLIENT_API_URL', 'http://client-api:5000')
@@ -48,7 +45,6 @@ class ChorumeBot(commands.Bot):
         logger.info(f'Logged in as {self.user} (ID: {self.user.id})')
         logger.info('------')
         
-        # Set bot status
         activity = discord.Activity(
             type=discord.ActivityType.watching,
             name="a economia 💰"
@@ -73,7 +69,6 @@ async def make_api_request(session: aiohttp.ClientSession, method: str, url: str
 async def get_or_create_user(discord_id: str, username: str) -> Optional[dict]:
     """Get existing user or create new one."""
     async with aiohttp.ClientSession() as session:
-        # Try to get existing user
         status, data = await make_api_request(
             session, 'GET', f"{CLIENT_API_URL}/client/discordId/{discord_id}"
         )
@@ -81,7 +76,6 @@ async def get_or_create_user(discord_id: str, username: str) -> Optional[dict]:
         if status == 200:
             return data
         elif status == 404:
-            # Create new user
             user_data = {
                 "discordId": discord_id,
                 "name": username
@@ -126,7 +120,6 @@ async def balance(interaction: discord.Interaction, user: Optional[discord.Membe
     target_user = user if user else interaction.user
     discord_id = str(target_user.id)
     
-    # Get user info first
     user_data = await get_or_create_user(discord_id, target_user.display_name)
     if not user_data:
         embed = discord.Embed(
@@ -137,7 +130,6 @@ async def balance(interaction: discord.Interaction, user: Optional[discord.Membe
         await interaction.followup.send(embed=embed)
         return
     
-    # Get balance
     async with aiohttp.ClientSession() as session:
         status, balance_data = await make_api_request(
             session, 'GET', f"{BALANCE_API_URL}/balance/{user_data['id']}"
@@ -181,7 +173,6 @@ async def daily(interaction: discord.Interaction):
         await interaction.followup.send(embed=embed)
         return
     
-    # Claim daily coins
     async with aiohttp.ClientSession() as session:
         claim_data = {"clientId": user_data['id']}
         status, response = await make_api_request(
@@ -243,7 +234,6 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
         await interaction.followup.send(embed=embed)
         return
     
-    # Get both users
     sender = await get_or_create_user(str(interaction.user.id), interaction.user.display_name)
     receiver = await get_or_create_user(str(recipient.id), recipient.display_name)
     
@@ -256,7 +246,6 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
         await interaction.followup.send(embed=embed)
         return
     
-    # Check sender's balance first
     async with aiohttp.ClientSession() as session:
         status, balance_data = await make_api_request(
             session, 'GET', f"{BALANCE_API_URL}/balance/{sender['id']}"
@@ -281,7 +270,6 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
             await interaction.followup.send(embed=embed)
             return
         
-        # Perform transfer
         transfer_data = {
             "senderId": sender['id'],
             "receiverId": receiver['id'],
@@ -322,7 +310,6 @@ async def leaderboard(interaction: discord.Interaction, limit: int = 10):
         limit = 10
     
     async with aiohttp.ClientSession() as session:
-        # Get all users
         status, users = await make_api_request(session, 'GET', f"{CLIENT_API_URL}/client/")
         
         if status != 200:
@@ -334,7 +321,6 @@ async def leaderboard(interaction: discord.Interaction, limit: int = 10):
             await interaction.followup.send(embed=embed)
             return
         
-        # Get balances for all users
         user_balances = []
         for user in users:
             status, balance_data = await make_api_request(
@@ -344,7 +330,6 @@ async def leaderboard(interaction: discord.Interaction, limit: int = 10):
                 balance = balance_data.get('balance', 0)
                 user_balances.append((user, balance))
         
-        # Sort by balance descending
         user_balances.sort(key=lambda x: x[1], reverse=True)
         
         embed = discord.Embed(
@@ -399,7 +384,6 @@ async def history(interaction: discord.Interaction, limit: int = 10):
         return
     
     async with aiohttp.ClientSession() as session:
-        # Get balance operations
         status, operations = await make_api_request(
             session, 'GET', f"{BALANCE_API_URL}/balance/operations/{user_data['id']}"
         )
@@ -419,7 +403,6 @@ async def history(interaction: discord.Interaction, limit: int = 10):
             color=discord.Color.blue()
         )
         
-        # Sort by creation date (most recent first)
         operations.sort(key=lambda x: x.get('createdAt', ''), reverse=True)
         
         for operation in operations[:limit]:
@@ -434,7 +417,6 @@ async def history(interaction: discord.Interaction, limit: int = 10):
                 amount_str = f"{amount:,} moedas 📉"
                 color_emoji = "🔴"
             
-            # Format date
             try:
                 from datetime import datetime
                 dt = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
@@ -617,7 +599,6 @@ async def help_command(interaction: discord.Interaction):
         logger.info(f"Successfully sent help command response to {interaction.user.display_name}")
     except Exception as e:
         logger.error(f"Failed to send help command response: {e}")
-        # Fallback to basic response
         try:
             await interaction.followup.send("Comando de ajuda temporariamente indisponível. Tente novamente mais tarde.")
         except:

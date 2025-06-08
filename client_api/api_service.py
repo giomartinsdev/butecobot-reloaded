@@ -11,7 +11,6 @@ from models.UserUpdate import UserUpdate
 
 load_dotenv()
 
-# Setup logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
