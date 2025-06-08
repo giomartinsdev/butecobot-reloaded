@@ -1,0 +1,75 @@
+### economy-api (http://localhost:5001)
+
+# Health Check
+GET http://localhost:5001/health
+
+###
+
+# Get Daily Coins
+POST http://localhost:5001/coin/get-daily
+Content-Type: application/json
+
+{
+  "user_id": "123"
+}
+
+###
+
+# Show Coins
+GET http://localhost:5001/coin/show?user_id=123
+
+###
+
+# Transfer Coins
+POST http://localhost:5001/coin/transfer
+Content-Type: application/json
+
+{
+  "from_user": "123",
+  "to_user": "456",
+  "amount": 50
+}
+
+###
+
+# Update Coins (Admin/Manual)
+PUT http://localhost:5001/coin/update
+Content-Type: application/json
+
+{
+  "user_id": "123",
+  "amount": 100,
+  "reason": "Bonus"
+}
+
+###
+
+# Remove User
+DELETE http://localhost:5001/coin/remove
+Content-Type: application/json
+
+{
+  "user_id": "123"
+}
+
+###
+
+# Airplane Distribute
+POST http://localhost:5001/airplane/distribute
+Content-Type: application/json
+
+{
+  "total_amount": 100,
+  "participants": ["123", "456", "789"],
+  "distributor": "123"
+}
+
+###
+
+# Get Transactions
+GET http://localhost:5001/transactions?user_id=123&type=transfer&limit=10
+
+###
+
+# Get Leaderboard
+GET http://localhost:5001/leaderboard

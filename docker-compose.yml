@@ -1,103 +1,55 @@
 services:
-  bot:
-    container_name: bbot-app
-    image: brunofunnie/butecobot-reloaded-app:latest
+
+  economy-api:
+    build: ./economy_api
+    container_name: economy_api_container
+    ports:
+      - "5001:5000"
     environment:
-      TZ: "America/Sao_Paulo"
-      ENVIRONMENT: ${ENVIRONMENT:-development}
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+    networks:
+      - chorume_network
+    restart: unless-stopped
+
+  chorume-bot:
+    build: ./chorume_bot
+    container_name: chorume_bot_container
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - ECONOMY_API_URL=http://economy-api:5000
+      - ECONOMY_SERVICE_URL=http://economy-service:3000
+    networks:
+      - chorume_network
+    depends_on:
+      - economy-api
+      - economy-api-gateway
+    restart: unless-stopped
+
+  postgres-db:
+    image: postgres:14
+    container_name: postgres_db_container
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DB_USER:-economyuser}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-economypass}
+      - POSTGRES_DB=${DB_NAME:-economydb}
     volumes:
-      - ./builds/.env:/app/.env
-      - ./storage/:/app/storage/
-      - ./storage/logs/:/app/logs/
+      - economy_data:/var/lib/postgresql/data
     networks:
-      bbot:
-
-  mysql:
-    container_name: bbot-mysql
-    image: mysql:8.1.0
-    environment:
-      TZ: "America/Sao_Paulo"
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_DATABASE: "butecobot"
-      MYSQL_USER: "butecobot"
-      MYSQL_PASSWORD: "butecobot"
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql:/var/lib/mysql
-      - ./docker/confs/mysql/my.cnf:/etc/mysql/my.cnf
-    networks:
-      bbot:
-
-  pma:
-    container_name: bbot-pma
-    image: phpmyadmin:5.2.1-apache
-    environment:
-      TZ: "America/Sao_Paulo"
-      PMA_ARBITRARY: "1"
-      MEMORY_LIMIT: "2048M"
-      UPLOAD_LIMIT: "2048M"
-    ports:
-      - "8081:80"
-    networks:
-      bbot:
-
-  mongo:
-    container_name: bbot-mongo
-    image: mongo
-    environment:
-      TZ: "America/Sao_Paulo"
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb:/data/db
-    networks:
-      bbot:
-
-  mongo-express:
-    container_name: bbot-mongo-express
-    image: mongo-express
-    environment:
-      TZ: "America/Sao_Paulo"
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: rootd
-      ME_CONFIG_MONGODB_URL: mongodb://root:root@mongo:27017/
-      ME_CONFIG_BASICAUTH: false
-    ports:
-      - "8082:8081"
-    networks:
-      bbot:
-
-  valkey:
-    container_name: bbot-valkey
-    image: valkey/valkey
-    environment:
-      TZ: "America/Sao_Paulo"
-    ports:
-      - "6379:6379"
-    volumes:
-      - valkey:/data
-    command: valkey-server --save 20 1 --loglevel warning --requirepass valkey
-    networks:
-      bbot:
-
-  mpit:
-    container_name: bbot-mailpit
-    image: axllent/mailpit
-    environment:
-      TZ: "America/Sao_Paulo"
-    ports:
-      - "8025:8025"
-      - "1025:1025"
-    networks:
-      bbot:
+      - chorume_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-economyuser} -d ${DB_NAME:-economydb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
-  bbot:
+  chorume_network:
+    driver: bridge
 
 volumes:
-  mysql:
-  valkey:
-  mongodb:
+  bet_data:
+  economy_data:
