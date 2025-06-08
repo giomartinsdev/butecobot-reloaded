@@ -1,15 +1,15 @@
 services:
 
-  # economy-api:
-  #   build: ./economy_api
-  #   container_name: economy_api_container
-  #   ports:
-  #     - "5001:5000"
-  #   environment:
-  #     - DATABASE_URL=postgresql://economyuser:economypass@postgres-db:5432/economydb
-  #   networks:
-  #     - chorume_network
-  #   restart: unless-stopped
+  economy-api:
+    build: ./economy_api
+    container_name: economy_api_container
+    ports:
+      - "5001:5000"
+    environment:
+      - DATABASE_URL=postgresql://economyuser:economypass@postgres-db:5432/economydb
+    networks:
+      - chorume_network
+    restart: unless-stopped
 
   client-api:
     build: ./client_api
@@ -42,6 +42,7 @@ services:
     depends_on:
       - client-api
       - db-migration-service
+      - economy-api
     restart: unless-stopped
 
   postgres-db:

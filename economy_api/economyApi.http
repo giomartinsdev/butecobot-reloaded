@@ -1,7 +1,7 @@
 ### economy-api (http://localhost:5001)
 
 # Add balance operation
-POST http://localhost:8000/balance/add
+POST http://localhost:5001/balance/add
 Content-Type: application/json
 
 {
@@ -14,7 +14,7 @@ Content-Type: application/json
 ###
 
 # Subtract balance operation
-POST http://localhost:8000/balance/subtract
+POST http://localhost:5001/balance/subtract
 Content-Type: application/json
 
 {
@@ -27,17 +27,17 @@ Content-Type: application/json
 ###
 
 # Get user balance
-GET http://localhost:8000/balance/11111111-1111-1111-1111-111111111111
+GET http://localhost:5001/balance/11111111-1111-1111-1111-111111111111
 
 ###
 
 # Get all operations for a user
-GET http://localhost:8000/balance/operations/11111111-1111-1111-1111-111111111111
+GET http://localhost:5001/balance/operations/11111111-1111-1111-1111-111111111111
 
 ###
 
 # Update a balance operation
-PUT http://localhost:8000/balance/operation/33333333-3333-3333-3333-333333333333
+PUT http://localhost:5001/balance/operation/33333333-3333-3333-3333-333333333333
 Content-Type: application/json
 
 {

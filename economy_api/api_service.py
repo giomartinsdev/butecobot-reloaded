@@ -21,11 +21,21 @@ app = FastAPI()
 def add_balance_operation(op: BalanceOperationCreate):
     db: Session = SessionLocal()
     try:
-        balance_op = BalanceOperation(**op.dict())
-        db.add(balance_op)
+        # Add operation for receiver (credit)
+        receiver_op = BalanceOperation(**op.dict())
+        db.add(receiver_op)
+        # Add operation for sender (debit)
+        sender_op = BalanceOperation(
+            receiverId=op.sender_id,
+            senderId=op.sender_id,
+            amount=-abs(op.amount),
+            description=op.description
+        )
+        db.add(sender_op)
         db.commit()
-        db.refresh(balance_op)
-        return balance_op
+        db.refresh(receiver_op)
+        db.refresh(sender_op)
+        return {"receiver_op": receiver_op, "sender_op": sender_op}
     finally:
         db.close()
 
@@ -33,12 +43,21 @@ def add_balance_operation(op: BalanceOperationCreate):
 def subtract_balance_operation(op: BalanceOperationCreate):
     db: Session = SessionLocal()
     try:
-        op.amount = -abs(op.amount)
-        balance_op = BalanceOperation(**op.dict())
-        db.add(balance_op)
+        # Add operation for sender (debit)
+        sender_op = BalanceOperation(**op.dict())
+        db.add(sender_op)
+        # Add operation for receiver (credit)
+        receiver_op = BalanceOperation(
+            receiverId=op.receiver_id,
+            senderId=op.sender_id,
+            amount=abs(op.amount),
+            description=op.description
+        )
+        db.add(receiver_op)
         db.commit()
-        db.refresh(balance_op)
-        return balance_op
+        db.refresh(sender_op)
+        db.refresh(receiver_op)
+        return {"sender_op": sender_op, "receiver_op": receiver_op}
     finally:
         db.close()
 
@@ -77,5 +96,32 @@ def update_balance_operation(operation_id: str, op: BalanceOperationUpdate):
         db.commit()
         db.refresh(balance_op)
         return balance_op
+    finally:
+        db.close()
+
+@app.post("/balance/transaction")
+def create_transaction(sender_id: str, receiver_id: str, amount: int, description: str):
+    db: Session = SessionLocal()
+    try:
+        # Create debit for sender
+        sender_op = BalanceOperation(
+            receiverId=sender_id,  # self for sender
+            senderId=sender_id,
+            amount=-abs(amount),
+            description=description
+        )
+        # Create credit for receiver
+        receiver_op = BalanceOperation(
+            receiverId=receiver_id,
+            senderId=sender_id,
+            amount=abs(amount),
+            description=description
+        )
+        db.add(sender_op)
+        db.add(receiver_op)
+        db.commit()
+        db.refresh(sender_op)
+        db.refresh(receiver_op)
+        return {"sender_op": sender_op, "receiver_op": receiver_op}
     finally:
         db.close()
