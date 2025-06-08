@@ -59,7 +59,6 @@ services:
       - DB_NAME=${DB_NAME:-economydb}
     networks:
       - chorume_network
-    restart: unless-stopped
     volumes:
       - ./db_migration_service/src/migration:/app/src/migration
 
