@@ -6,10 +6,7 @@ export class BalanceOperation {
     id!: string;
 
     @Column({ type: "uuid" })
-    receiverId!: string;
-
-    @Column({ type: "uuid" })
-    senderId!: string;
+    clientId!: string;
 
     @Column({ type: "integer" })
     amount!: number;
