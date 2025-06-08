@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
 import { User } from "./src/entity/User";
 import { BalanceOperation } from "./src/entity/BalanceOperation";
+import { DailyClaim } from "./src/entity/DailyClaim";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -14,7 +15,7 @@ export default new DataSource({
     database: process.env.DB_NAME,
     synchronize: false,
     logging: false,
-    entities: [User, BalanceOperation],
+    entities: [User, BalanceOperation, DailyClaim],
     migrations: ["src/migration/**/*.ts"],
     subscribers: [],
 });

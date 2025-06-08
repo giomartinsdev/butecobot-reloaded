@@ -11,6 +11,21 @@ services:
       - .env
     restart: unless-stopped
 
+  coin-api:
+    build: ./coin_api
+    container_name: coin_api_container
+    ports:
+      - "5002:5000"
+    networks:
+      - chorume_network
+    depends_on:
+      - postgres-db
+      - balance-api
+      - client-api
+    env_file:
+      - .env
+    restart: unless-stopped
+
   client-api:
     build: ./client_api
     container_name: client_api_container
@@ -24,7 +39,6 @@ services:
       - .env
     restart: unless-stopped
 
-
   chorume-bot:
     build: ./chorume_bot
     container_name: chorume_bot_container
@@ -34,6 +48,7 @@ services:
       - client-api
       - db-migration-service
       - balance-api
+      - coin-api
     env_file:
       - .env
     restart: unless-stopped

@@ -1,0 +1,24 @@
+### coins-api (http://localhost:5002)
+
+# Claim daily coins for a user
+POST http://localhost:5002/daily-coins
+Content-Type: application/json
+
+{
+  "clientId": "6fc27d26-1a5b-4183-a4ce-0950246f4b56"
+}
+
+###
+
+# Get claim history for a user
+GET http://localhost:5002/daily-coins/history/6fc27d26-1a5b-4183-a4ce-0950246f4b56
+
+###
+
+# Get claim history with limit
+GET http://localhost:5002/daily-coins/history/6fc27d26-1a5b-4183-a4ce-0950246f4b56?limit=10
+
+###
+
+# Health check
+GET http://localhost:5002/health
