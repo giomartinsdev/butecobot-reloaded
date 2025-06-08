@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import requests
 import asyncio
+from dotenv import load_dotenv
+load_dotenv()
 import os
 import json
 from datetime import datetime
@@ -10,7 +12,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-ECONOMY_API_URL = os.getenv('ECONOMY_API_URL', 'http://economy-api:5000')
+ECONOMY_API_URL = os.getenv("ECONOMY_API_URL")
 
 class APIClient:
     """Client for making requests to other containers"""

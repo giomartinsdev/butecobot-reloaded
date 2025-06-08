@@ -8,5 +8,6 @@ RUN npm install
 COPY . .
 
 RUN npm run build
+RUN npm install dotenv --save
 
 CMD ["npm", "run", "migration:run"]

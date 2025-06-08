@@ -18,7 +18,7 @@ This guide explains how to generate a new database migration for the `db_migrati
 2. **Generate the migration**
    - Run the following command from your project root:
      ```sh
-      docker-compose run --rm db-migration-service npm run migration:generate -- src/migration/FistMigration.ts     
+      docker-compose run --rm db-migration-service npm run migration:generate -- src/migration/FistMigration
      ```
    - Replace `FistMigration` with a descriptive name for your migration. The path must start with `src/migration/` for TypeORM to generate the file in the correct folder.
    - If you use `docker compose` (with a space), the command is the same:
@@ -29,7 +29,7 @@ This guide explains how to generate a new database migration for the `db_migrati
 3. **Check the generated migration**
    - The new migration file will appear in `db_migration_service/src/migration/`.
 
-4. **Apply the migration**
+4. **Apply the migration** [[Optional]]
    - To run all pending migrations:
      ```sh
      docker-compose run --rm db-migration-service npm run migration:run
