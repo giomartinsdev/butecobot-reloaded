@@ -1,0 +1,68 @@
+### Test Coin API Integration
+
+# Test user creation first
+POST http://localhost:5000/client/
+Content-Type: application/json
+
+{
+  "discordId": "123456789012345678",
+  "name": "TestUser"
+}
+
+###
+
+# Check daily claim status
+GET http://localhost:5002/daily-coins/status/123456789012345678
+
+###
+
+# Claim daily coins
+POST http://localhost:5002/daily-coins
+Content-Type: application/json
+
+{
+  "clientId": "123456789012345678"
+}
+
+###
+
+# Check balance after claim
+GET http://localhost:5001/balance/123456789012345678
+
+###
+
+# Get claim history
+GET http://localhost:5002/daily-coins/history/123456789012345678
+
+###
+
+# Test transfer (create second user first)
+POST http://localhost:5000/client/
+Content-Type: application/json
+
+{
+  "discordId": "987654321098765432",
+  "name": "TestUser2"
+}
+
+###
+
+# Transfer coins
+POST http://localhost:5001/balance/transaction
+Content-Type: application/json
+
+{
+  "senderId": "123456789012345678",
+  "receiverId": "987654321098765432",
+  "amount": 25,
+  "description": "Test transfer"
+}
+
+###
+
+# Check both balances
+GET http://localhost:5001/balance/123456789012345678
+
+###
+
+GET http://localhost:5001/balance/987654321098765432

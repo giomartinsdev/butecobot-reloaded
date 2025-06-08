@@ -1,15 +1,42 @@
 # Chorume Bot Ecosystem
 
-A comprehensive Discord bot ecosystem built with Docker containers, featuring betting, economy, AI integration, and flexible architecture for multi-language compatibility.
+A comprehensive Discord bot ecosystem built with Docker containers, featuring economy management, daily rewards, user transfers, and microservices architecture.
 
-## Overview
+## 🎮 Discord Bot Features
 
-The Chorume Bot Ecosystem is a modular, containerized application that provides a Discord bot with multiple integrated services. The system consists of four main containers that work together to create a comprehensive gaming and entertainment experience:
+The Chorume Bot provides a complete economy system through Discord slash commands:
 
-- **betApiContainer**: Handles betting functionality for sports matches and events
-- **economyApiContainer**: Manages virtual currency, daily rewards, and the "airplane" money distribution system
-- **AIApiContainer**: Provides AI text and image generation with flexible provider support
-- **ChorumeBotContainer**: Discord bot that orchestrates all services and provides user interaction
+### 💰 Economy Commands
+- `/register` - Join the economy system
+- `/daily` - Claim daily coins (100 coins/day)
+- `/balance [user]` - Check coin balance
+- `/transfer <user> <amount>` - Send coins to other users
+- `/leaderboard` - View top users by balance
+- `/history` - View transaction history
+
+### 📊 Information Commands  
+- `/status` - Check all microservices health
+- `/help` - Show all available commands
+- `/daily_history` - View daily claim history
+
+## 🚀 Quick Start
+
+1. **Setup the system:**
+   ```bash
+   ./start.sh
+   ```
+
+2. **Configure Discord bot:**
+   - Get bot token from [Discord Developer Portal](https://discord.com/developers/applications)
+   - Edit `.env` file with your `DISCORD_TOKEN`
+   - Invite bot to your server with slash command permissions
+
+3. **Start using:**
+   ```
+   /register    # Join the economy
+   /daily       # Get your first coins
+   /balance     # Check your wealth
+   ```
 
 ## Architecture
 

@@ -1,0 +1,330 @@
+### Chorume Bot Ecosystem - API Integration Tests
+### Use this file with REST client extensions (like REST Client for VS Code)
+### or copy the curl commands to test the APIs manually
+
+### Variables
+@baseClientUrl = http://localhost:5000
+@baseBalanceUrl = http://localhost:5001
+@baseCoinUrl = http://localhost:5002
+@testDiscordId = 123456789012345678
+@testDiscordId2 = 987654321098765432
+
+### 1. Health Checks
+### Test all service health endpoints
+
+# Client API Health
+GET {{baseClientUrl}}/health
+
+###
+
+# Balance API Health  
+GET {{baseBalanceUrl}}/health
+
+###
+
+# Coin API Health
+GET {{baseCoinUrl}}/health
+
+###
+
+### 2. User Management (Client API)
+### Test user registration and lookup
+
+# Register first test user
+POST {{baseClientUrl}}/client/
+Content-Type: application/json
+
+{
+  "discordId": "{{testDiscordId}}",
+  "name": "TestUser1"
+}
+
+###
+
+# Register second test user
+POST {{baseClientUrl}}/client/
+Content-Type: application/json
+
+{
+  "discordId": "{{testDiscordId2}}",
+  "name": "TestUser2"
+}
+
+###
+
+# Get user by Discord ID
+GET {{baseClientUrl}}/client/discordId/{{testDiscordId}}
+
+###
+
+# Get all users
+GET {{baseClientUrl}}/client/
+
+###
+
+### 3. Balance Operations (Balance API)
+### Test economy operations
+
+# Add initial balance to user 1 (replace USER_ID with actual ID from step 2)
+POST {{baseBalanceUrl}}/balance/add
+Content-Type: application/json
+
+{
+  "clientId": "USER_ID_HERE",
+  "amount": 500,
+  "description": "Initial test balance"
+}
+
+###
+
+# Check user balance (replace USER_ID)
+GET {{baseBalanceUrl}}/balance/USER_ID_HERE
+
+###
+
+# Add balance to user 2 (replace USER_ID)
+POST {{baseBalanceUrl}}/balance/add
+Content-Type: application/json
+
+{
+  "clientId": "USER_ID_2_HERE",
+  "amount": 200,
+  "description": "Initial test balance"
+}
+
+###
+
+# Transfer between users (replace both USER_IDs)
+POST {{baseBalanceUrl}}/balance/transaction
+Content-Type: application/json
+
+{
+  "senderId": "USER_ID_1_HERE",
+  "receiverId": "USER_ID_2_HERE",
+  "amount": 50,
+  "description": "Test transfer"
+}
+
+###
+
+# Get transaction history for user 1
+GET {{baseBalanceUrl}}/balance/operations/USER_ID_1_HERE
+
+###
+
+# Get transaction history for user 2
+GET {{baseBalanceUrl}}/balance/operations/USER_ID_2_HERE
+
+###
+
+### 4. Daily Coins (Coin API)
+### Test daily claim system
+
+# Claim daily coins for user 1 (replace USER_ID)
+POST {{baseCoinUrl}}/daily-coins
+Content-Type: application/json
+
+{
+  "clientId": "USER_ID_HERE"
+}
+
+###
+
+# Check claim status for user 1
+GET {{baseCoinUrl}}/daily-coins/status/USER_ID_HERE
+
+###
+
+# Try to claim again (should fail - already claimed today)
+POST {{baseCoinUrl}}/daily-coins
+Content-Type: application/json
+
+{
+  "clientId": "USER_ID_HERE"
+}
+
+###
+
+# Get claim history for user 1
+GET {{baseCoinUrl}}/daily-coins/history/USER_ID_HERE
+
+###
+
+# Get claim history with limit
+GET {{baseCoinUrl}}/daily-coins/history/USER_ID_HERE?limit=5
+
+###
+
+### 5. Complete Flow Test
+### This section tests the complete user journey
+
+# Step 1: Register new user
+POST {{baseClientUrl}}/client/
+Content-Type: application/json
+
+{
+  "discordId": "555666777888999000",
+  "name": "FlowTestUser"
+}
+
+###
+
+# Step 2: Claim daily coins (use USER_ID from previous response)
+POST {{baseCoinUrl}}/daily-coins
+Content-Type: application/json
+
+{
+  "clientId": "FLOW_TEST_USER_ID_HERE"
+}
+
+###
+
+# Step 3: Check balance after daily claim
+GET {{baseBalanceUrl}}/balance/FLOW_TEST_USER_ID_HERE
+
+###
+
+# Step 4: Add some extra coins
+POST {{baseBalanceUrl}}/balance/add
+Content-Type: application/json
+
+{
+  "clientId": "FLOW_TEST_USER_ID_HERE",
+  "amount": 150,
+  "description": "Bonus coins for testing"
+}
+
+###
+
+# Step 5: Final balance check
+GET {{baseBalanceUrl}}/balance/FLOW_TEST_USER_ID_HERE
+
+###
+
+# Step 6: View transaction history
+GET {{baseBalanceUrl}}/balance/operations/FLOW_TEST_USER_ID_HERE
+
+###
+
+### 6. Error Testing
+### Test error conditions and edge cases
+
+# Try to register user with existing Discord ID
+POST {{baseClientUrl}}/client/
+Content-Type: application/json
+
+{
+  "discordId": "{{testDiscordId}}",
+  "name": "DuplicateUser"
+}
+
+###
+
+# Try to get non-existent user
+GET {{baseClientUrl}}/client/00000000-0000-0000-0000-000000000000
+
+###
+
+# Try to get balance for non-existent user
+GET {{baseBalanceUrl}}/balance/00000000-0000-0000-0000-000000000000
+
+###
+
+# Try invalid transaction (negative amount)
+POST {{baseBalanceUrl}}/balance/transaction
+Content-Type: application/json
+
+{
+  "senderId": "USER_ID_1_HERE",
+  "receiverId": "USER_ID_2_HERE", 
+  "amount": -50,
+  "description": "Invalid negative transfer"
+}
+
+###
+
+# Try transfer to same user
+POST {{baseBalanceUrl}}/balance/transaction
+Content-Type: application/json
+
+{
+  "senderId": "USER_ID_1_HERE",
+  "receiverId": "USER_ID_1_HERE",
+  "amount": 25,
+  "description": "Self transfer"
+}
+
+###
+
+### 7. Discord Bot Simulation
+### Test the flow that the Discord bot would use
+
+# Simulate /register command
+# 1. Try to get user first
+GET {{baseClientUrl}}/client/discordId/111222333444555666
+
+###
+
+# 2. If user doesn't exist, create them
+POST {{baseClientUrl}}/client/
+Content-Type: application/json
+
+{
+  "discordId": "111222333444555666",
+  "name": "BotSimUser"
+}
+
+###
+
+# Simulate /daily command
+# 1. Get user ID first, then claim daily coins
+POST {{baseCoinUrl}}/daily-coins
+Content-Type: application/json
+
+{
+  "clientId": "BOT_SIM_USER_ID_HERE"
+}
+
+###
+
+# Simulate /balance command
+GET {{baseBalanceUrl}}/balance/BOT_SIM_USER_ID_HERE
+
+###
+
+# Simulate /transfer command
+# (Would need another user to transfer to)
+
+###
+
+# Simulate /history command
+GET {{baseBalanceUrl}}/balance/operations/BOT_SIM_USER_ID_HERE
+
+###
+
+# Simulate /daily_history command
+GET {{baseCoinUrl}}/daily-coins/history/BOT_SIM_USER_ID_HERE
+
+###
+
+### 8. Performance Test
+### Test multiple rapid requests
+
+# Rapid balance checks
+GET {{baseBalanceUrl}}/balance/USER_ID_HERE
+
+###
+
+GET {{baseBalanceUrl}}/balance/USER_ID_HERE
+
+###
+
+GET {{baseBalanceUrl}}/balance/USER_ID_HERE
+
+###
+
+### Notes:
+### - Replace USER_ID_HERE with actual UUIDs from user creation responses
+### - Some tests will fail on purpose to demonstrate error handling
+### - Use the test_system.sh script for automated testing
+### - Check Docker logs if any API calls fail: docker-compose logs [service-name]
