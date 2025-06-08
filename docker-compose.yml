@@ -23,7 +23,7 @@ services:
       - chorume_network
     depends_on:
       - economy-api
-      - economy-api-gateway
+      - db-migration-service
     restart: unless-stopped
 
   postgres-db:
@@ -45,6 +45,23 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  db-migration-service:
+    build: ./db_migration_service
+    container_name: db_migration_service_container
+    depends_on:
+      - postgres-db
+    environment:
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-economyuser}
+      - DB_PASSWORD=${DB_PASSWORD:-economypass}
+      - DB_NAME=${DB_NAME:-economydb}
+    networks:
+      - chorume_network
+    restart: unless-stopped
+    volumes:
+      - ./db_migration_service/src/migration:/app/src/migration
 
 networks:
   chorume_network:
