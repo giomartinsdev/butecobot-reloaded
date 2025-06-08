@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, DateTime, Date
+from sqlalchemy import Column, String, DateTime, Integer, Text
 import uuid
 from datetime import datetime
 
@@ -10,9 +10,14 @@ class DailyClaim(Base):
     
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     clientId = Column(String, nullable=False)
-    claimDate = Column(Date, nullable=False)
+    balanceOperationId = Column(String, nullable=False)
+    amount = Column(Integer, nullable=False)
+    description = Column(Text, nullable=False)
     createdAt = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     
     def __repr__(self):
         return (f"DailyClaim(id={self.id}, clientId={self.clientId}, "
-                f"claimDate={self.claimDate}, createdAt={self.createdAt})")
+                f"balanceOperationId={self.balanceOperationId}, amount={self.amount}, "
+                f"description={self.description}, createdAt={self.createdAt}, "
+                f"updatedAt={self.updatedAt})")

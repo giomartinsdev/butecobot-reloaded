@@ -26,6 +26,23 @@ services:
       - .env
     restart: unless-stopped
 
+  bet-api:
+    build: ./bet_api
+    container_name: bet_api_container
+    ports:
+      - "5003:5000"
+    networks:
+      - chorume_network
+    depends_on:
+      - balance-api
+      - client-api
+    environment:
+      - BALANCE_API_URL=http://balance-api:5000
+      - CLIENT_API_URL=http://client-api:5000
+    env_file:
+      - .env
+    restart: unless-stopped
+
   client-api:
     build: ./client_api
     container_name: client_api_container
@@ -49,10 +66,12 @@ services:
       - db-migration-service
       - balance-api
       - coin-api
+      - bet-api
     environment:
       - BALANCE_API_URL=http://balance-api:5000
       - CLIENT_API_URL=http://client-api:5000
       - COIN_API_URL=http://coin-api:5000
+      - BET_API_URL=http://bet-api:5000
     env_file:
       - .env
     restart: unless-stopped

@@ -6,9 +6,11 @@ from dotenv import load_dotenv
 import os
 import requests
 import logging
-from datetime import date, timedelta, timedelta
+import uuid
+from datetime import date, timedelta
 from models.DailyClaim import DailyClaim, Base
 from models.DailyClaimRequest import DailyClaimRequest
+from sqlalchemy import func
 
 load_dotenv()
 
@@ -38,7 +40,7 @@ def claim_daily_coins(request: DailyClaimRequest):
         today = date.today()
         existing_claim = db.query(DailyClaim).filter(
             DailyClaim.clientId == request.clientId,
-            DailyClaim.claimDate == today
+            func.date(DailyClaim.createdAt) == today
         ).first()
         
         if existing_claim:
@@ -70,6 +72,9 @@ def claim_daily_coins(request: DailyClaimRequest):
             if add_balance_response.status_code != 200:
                 logger.error(f"Failed to add daily coins to balance for client: {request.clientId}")
                 raise HTTPException(status_code=500, detail="Failed to add coins to balance")
+            
+            balance_response_data = add_balance_response.json()
+            balance_operation_id = balance_response_data.get('id', str(uuid.uuid4()))
                 
         except requests.exceptions.RequestException:
             logger.error(f"Balance service unavailable during daily coin claim for: {request.clientId}")
@@ -77,7 +82,9 @@ def claim_daily_coins(request: DailyClaimRequest):
         
         daily_claim = DailyClaim(
             clientId=request.clientId,
-            claimDate=today
+            balanceOperationId=balance_operation_id,
+            amount=DAILY_COINS_AMOUNT,
+            description="Daily coins reward"
         )
         
         db.add(daily_claim)
@@ -91,6 +98,7 @@ def claim_daily_coins(request: DailyClaimRequest):
             "amount": DAILY_COINS_AMOUNT,
             "clientId": request.clientId,
             "claimDate": today.isoformat(),
+            "balanceOperationId": balance_operation_id
         }
         
     finally:
@@ -103,13 +111,17 @@ def get_claim_history(client_id: str, limit: int = 30):
     try:
         claims = db.query(DailyClaim).filter(
             DailyClaim.clientId == client_id
-        ).order_by(DailyClaim.claimDate.desc()).limit(limit).all()
+        ).order_by(DailyClaim.createdAt.desc()).limit(limit).all()
         
         history = []
+        total_earned = 0
         for claim in claims:
+            claim_amount = claim.amount
+            total_earned += claim_amount
             history.append({
-                "claimDate": claim.claimDate.isoformat(),
-                "amount": 100,
+                "claimDate": claim.createdAt.date().isoformat(),
+                "amount": claim_amount,
+                "description": claim.description,
                 "createdAt": claim.createdAt.isoformat()
             })
         
@@ -117,7 +129,7 @@ def get_claim_history(client_id: str, limit: int = 30):
         return {
             "clientId": client_id,
             "totalClaims": len(claims),
-            "totalCoinsEarned": len(claims) * 100,
+            "totalCoinsEarned": total_earned,
             "history": history
         }
         
@@ -136,9 +148,10 @@ def get_claim_status(client_id: str):
     db: Session = SessionLocal()
     try:
         today = date.today()
+        from sqlalchemy import func
         existing_claim = db.query(DailyClaim).filter(
             DailyClaim.clientId == client_id,
-            DailyClaim.claimDate == today
+            func.date(DailyClaim.createdAt) == today
         ).first()
         
         can_claim = existing_claim is None
@@ -147,7 +160,7 @@ def get_claim_status(client_id: str):
         return {
             "clientId": client_id,
             "canClaim": can_claim,
-            "lastClaimDate": existing_claim.claimDate.isoformat() if existing_claim else None,
+            "lastClaimDate": existing_claim.createdAt.date().isoformat() if existing_claim else None,
             "nextClaimDate": next_claim_date,
             "dailyAmount": DAILY_COINS_AMOUNT
         }
