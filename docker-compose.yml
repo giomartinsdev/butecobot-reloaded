@@ -36,9 +36,6 @@ services:
     depends_on:
       - balance-api
       - client-api
-    environment:
-      - BALANCE_API_URL=http://balance-api:5000
-      - CLIENT_API_URL=http://client-api:5000
     env_file:
       - .env
     restart: unless-stopped
