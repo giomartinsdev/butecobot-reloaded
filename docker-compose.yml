@@ -113,9 +113,22 @@ services:
     env_file:
       - .env
 
+  genai-api:
+    build: ./genai_api
+    container_name: genai_api_container
+    ports:
+      - "5004:5000"
+    networks:
+      - chorume_network
+    depends_on:
+      - postgres-db
+    env_file:
+      - .env
+    restart: unless-stopped
+
 networks:
   chorume_network:
     driver: bridge
 
-volumes:
+volumes: 
   economy_data:

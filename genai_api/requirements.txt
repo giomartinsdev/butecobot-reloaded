@@ -1,0 +1,6 @@
+fastapi
+httpx
+openai
+google-generativeai
+python-dotenv
+uvicorn

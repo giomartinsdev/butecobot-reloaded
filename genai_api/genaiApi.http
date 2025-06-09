@@ -1,0 +1,39 @@
+### GenAI API HTTP test file
+
+# Test OpenAI provider
+POST http://localhost:5004/generate
+Content-Type: application/json
+
+{
+  "prompt": "What is the capital of France?",
+  "provider": "openai"
+}
+
+### Test Gemini provider
+POST http://localhost:5004/generate
+Content-Type: application/json
+
+{
+  "prompt": "What is the capital of France?",
+  "provider": "gemini"
+}
+
+### Test with system prompt (business fine-tuning)
+POST http://localhost:5004/generate
+Content-Type: application/json
+
+{
+  "prompt": "How do you handle user authentication?",
+  "provider": "gemini",
+  "system_prompt": "You are an expert in secure API design."
+}
+
+### Test with custom model (if supported)
+POST http://localhost:5004/generate
+Content-Type: application/json
+
+{
+  "prompt": "Explain the difference between AI and ML.",
+  "provider": "gemini",
+  "model": "gemini-1.5-flash"
+}

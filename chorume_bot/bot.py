@@ -14,6 +14,7 @@ BALANCE_API_URL = os.getenv('BALANCE_API_URL', 'http://balance-api:5000')
 CLIENT_API_URL = os.getenv('CLIENT_API_URL', 'http://client-api:5000')
 COIN_API_URL = os.getenv('COIN_API_URL', 'http://coin-api:5000')
 BET_API_URL = os.getenv('BET_API_URL', 'http://bet-api:5000')
+GENAI_API_URL = os.getenv('GENAI_API_URL', 'http://genai-api:5000')
 
 logging.basicConfig(
     level=logging.INFO,
@@ -518,7 +519,8 @@ async def status(interaction: discord.Interaction):
         ("Balance API", f"{BALANCE_API_URL}/health"),
         ("Client API", f"{CLIENT_API_URL}/health"),
         ("Coin API", f"{COIN_API_URL}/health"),
-        ("Bet API", f"{BET_API_URL}/health")
+        ("Bet API", f"{BET_API_URL}/health"),
+        ("GenAI API", f"{GENAI_API_URL}/health")
     ]
     
     embed = discord.Embed(
@@ -639,7 +641,6 @@ async def bet_create(interaction: discord.Interaction, title: str, description: 
         await interaction.followup.send(embed=embed)
         return
     
-    # Validate inputs
     if len(title) > 100:
         embed = discord.Embed(
             title="❌ Título Muito Longo",
@@ -729,7 +730,7 @@ async def bet_list(interaction: discord.Interaction):
                 color=discord.Color.blue()
             )
             
-            for event in active_events[:10]:  # Limit to 10 events
+            for event in active_events[:10]:
                 options_text = f"{event.get('option1', 'Opção 1')} vs {event.get('option2', 'Opção 2')}"
                 embed.add_field(
                     name=f"🎯 {event['title']}",
@@ -795,7 +796,6 @@ async def bet_info(interaction: discord.Interaction, event_id: str):
         embed.add_field(name="Pool Total", value=f"{event.get('totalBetAmount', 0):,} moedas", inline=True)
         embed.add_field(name="Total de Apostas", value=str(total_bets), inline=True)
         
-        # Show option statistics
         option1_amount = event.get('option1BetAmount', 0)
         option2_amount = event.get('option2BetAmount', 0)
         total_amount = event.get('totalBetAmount', 0)
@@ -868,7 +868,6 @@ async def bet_place(interaction: discord.Interaction, event_id: str, choice: int
         return
     
     async with aiohttp.ClientSession() as session:
-        # First get event info to show choice name
         status, event_response = await make_api_request(
             session, 'GET', f"{BET_API_URL}/bet/event/{event_id}"
         )
@@ -948,7 +947,6 @@ async def bet_finalize(interaction: discord.Interaction, event_id: str, winning_
         return
     
     async with aiohttp.ClientSession() as session:
-        # Get event info first
         status, event_response = await make_api_request(
             session, 'GET', f"{BET_API_URL}/bet/event/{event_id}"
         )
@@ -1023,7 +1021,6 @@ async def bet_cancel(interaction: discord.Interaction, event_id: str):
         return
     
     async with aiohttp.ClientSession() as session:
-        # Get event info first
         status, event_response = await make_api_request(
             session, 'GET', f"{BET_API_URL}/bet/event/{event_id}"
         )
@@ -1123,7 +1120,7 @@ async def my_bets(interaction: discord.Interaction):
                 color=discord.Color.blue()
             )
             
-            for bet in user_bets[:10]:  # Limit to 10 bets
+            for bet in user_bets[:10]:
                 status_emoji = "🏁" if bet.get('isFinished') else "🟢"
                 result_text = ""
                 
@@ -1143,6 +1140,45 @@ async def my_bets(interaction: discord.Interaction):
                 embed.set_footer(text=f"Mostrando 10 de {len(user_bets)} apostas")
     
     await interaction.followup.send(embed=embed, ephemeral=True)
+
+@bot.tree.command(name="ai", description="Peça para a IA responder uma pergunta ou resolver um problema")
+@app_commands.describe(
+    prompt="Sua pergunta ou comando para a IA",
+    provider="Modelo de IA (openai, gemini, etc)",
+    system_prompt="Prompt de sistema para afinar a resposta (opcional)",
+)
+async def ai(
+    interaction: discord.Interaction,
+    prompt: str,
+    provider: Optional[str] = None,
+    system_prompt: Optional[str] = None,
+):
+    """Envia um prompt para o serviço de IA e retorna a resposta."""
+    await interaction.response.defer()
+    payload = {"prompt": prompt}
+    if provider:
+        payload["provider"] = provider
+    if system_prompt:
+        payload["system_prompt"] = system_prompt
+    async with aiohttp.ClientSession() as session:
+        status, response = await make_api_request(
+            session, 'POST', f"{GENAI_API_URL}/generate", payload
+        )
+    if status == 200 and response and isinstance(response, dict) and response.get("response"):
+        embed = discord.Embed(
+            title="🤖 Resposta da IA",
+            description=  f"Prompt: {prompt} \n\n Orientação da mensagem: {system_prompt} \n\n {response['response']}",
+        
+            color=discord.Color.purple()
+        )
+    else:
+        error_msg = response.get('detail', 'Erro desconhecido') if isinstance(response, dict) else str(response)
+        embed = discord.Embed(
+            title="❌ Erro na IA",
+            description=f"Falha ao obter resposta da IA: {error_msg}",
+            color=discord.Color.red()
+        )
+    await interaction.followup.send(embed=embed, )
 
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
