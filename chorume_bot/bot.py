@@ -95,7 +95,7 @@ def is_admin(user: discord.Member) -> bool:
 @bot.tree.command(name="register", description="Registre-se no sistema de economia")
 async def register(interaction: discord.Interaction):
     """Register a user in the system."""
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     user = await get_or_create_user(str(interaction.user.id), interaction.user.display_name)
     
@@ -115,12 +115,12 @@ async def register(interaction: discord.Interaction):
             color=discord.Color.red()
         )
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="balance", description="Verifique seu saldo atual")
 async def balance(interaction: discord.Interaction, user: Optional[discord.Member] = None):
     """Check balance for yourself or another user."""
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     target_user = user if user else interaction.user
     discord_id = str(target_user.id)
@@ -132,7 +132,7 @@ async def balance(interaction: discord.Interaction, user: Optional[discord.Membe
             description="Usuário não está registrado no sistema.",
             color=discord.Color.red()
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         return
     
     async with aiohttp.ClientSession() as session:
@@ -159,12 +159,12 @@ async def balance(interaction: discord.Interaction, user: Optional[discord.Membe
                 color=discord.Color.red()
             )
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="daily", description="Colete suas moedas diárias")
 async def daily(interaction: discord.Interaction):
     """Claim daily coins."""
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     discord_id = str(interaction.user.id)
     user_data = await get_or_create_user(discord_id, interaction.user.display_name)
@@ -175,7 +175,7 @@ async def daily(interaction: discord.Interaction):
             description="Please use `/register` first!",
             color=discord.Color.red()
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         return
     
     async with aiohttp.ClientSession() as session:
@@ -209,7 +209,7 @@ async def daily(interaction: discord.Interaction):
                 color=discord.Color.red()
             )
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="transfer", description="Transfira moedas para outro usuário")
 @app_commands.describe(
@@ -219,7 +219,7 @@ async def daily(interaction: discord.Interaction):
 )
 async def transfer(interaction: discord.Interaction, recipient: discord.Member, amount: int, description: str = "Transfer"):
     """Transfer coins between users."""
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     if amount <= 0:
         embed = discord.Embed(
@@ -227,7 +227,7 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
             description="O valor da transferência deve ser positivo!",
             color=discord.Color.red()
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         return
     
     if recipient.id == interaction.user.id:
@@ -236,7 +236,7 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
             description="Você não pode transferir moedas para si mesmo!",
             color=discord.Color.red()
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         return
     
     sender = await get_or_create_user(str(interaction.user.id), interaction.user.display_name)
@@ -248,7 +248,7 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
             description="Um ou ambos os usuários não estão registrados.",
             color=discord.Color.red()
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         return
     
     async with aiohttp.ClientSession() as session:
@@ -262,7 +262,7 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
                 description="Falha ao verificar saldo.",
                 color=discord.Color.red()
             )
-            await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed, ephemeral=True)
             return
         
         current_balance = balance_data.get('balance', 0)
@@ -272,7 +272,7 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
                 description=f"Você tem {current_balance:,} moedas, mas precisa de {amount:,} moedas.",
                 color=discord.Color.red()
             )
-            await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed, ephemeral=True)
             return
         
         transfer_data = {
@@ -301,13 +301,13 @@ async def transfer(interaction: discord.Interaction, recipient: discord.Member, 
                 color=discord.Color.red()
             )
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="leaderboard", description="Mostre os melhores usuários por saldo")
 @app_commands.describe(limit="Número de usuários para mostrar (máximo 20)")
 async def leaderboard(interaction: discord.Interaction, limit: int = 10):
     """Show leaderboard of users by balance."""
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     if limit > 20:
         limit = 20
@@ -363,13 +363,13 @@ async def leaderboard(interaction: discord.Interaction, limit: int = 10):
         if not user_balances:
             embed.description = "Nenhum usuário encontrado no ranking."
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="history", description="Veja seu histórico de transações")
 @app_commands.describe(limit="Número de transações para mostrar (máximo 50)")
 async def history(interaction: discord.Interaction, limit: int = 10):
     """Show user's transaction history."""
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     if limit > 50:
         limit = 50
@@ -399,7 +399,7 @@ async def history(interaction: discord.Interaction, limit: int = 10):
                 description="Falha ao obter histórico de transações.",
                 color=discord.Color.red()
             )
-            await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed, ephemeral=True)
             return
         
         embed = discord.Embed(
@@ -438,13 +438,13 @@ async def history(interaction: discord.Interaction, limit: int = 10):
         if not operations:
             embed.description = "Nenhuma transação encontrada."
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="daily_history", description="Veja seu histórico de coletas diárias")
 @app_commands.describe(limit="Número de coletas para mostrar (máximo 30)")
 async def daily_history(interaction: discord.Interaction, limit: int = 10):
     """Show user's daily claim history."""
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     if limit > 30:
         limit = 30
@@ -460,7 +460,7 @@ async def daily_history(interaction: discord.Interaction, limit: int = 10):
             description="Use `/register` primeiro!",
             color=discord.Color.red()
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         return
     
     async with aiohttp.ClientSession() as session:
@@ -474,7 +474,7 @@ async def daily_history(interaction: discord.Interaction, limit: int = 10):
                 description="Falha ao obter histórico de coletas diárias.",
                 color=discord.Color.red()
             )
-            await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed, ephemeral=True)
             return
         
         total_claims = history_data.get('totalClaims', 0)
@@ -507,12 +507,12 @@ async def daily_history(interaction: discord.Interaction, limit: int = 10):
         if not history:
             embed.description = "Nenhuma coleta diária encontrada. Use `/daily` para começar a coletar!"
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="status", description="Verifique o status de todos os microserviços")
 async def status(interaction: discord.Interaction):
     """Check the health status of all microservices."""
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     services = [
         ("Balance API", f"{BALANCE_API_URL}/health"),
@@ -552,13 +552,13 @@ async def status(interaction: discord.Interaction):
         inline=True
     )
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="help", description="Mostre todos os comandos disponíveis")
 async def help_command(interaction: discord.Interaction):
     """Show help information."""
     logger.info(f"Help command requested by {interaction.user.display_name} ({interaction.user.id})")
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     embed = discord.Embed(
         title="🤖 Chorume Bot - Comandos",
@@ -610,12 +610,12 @@ async def help_command(interaction: discord.Interaction):
     )
     
     try:
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         logger.info(f"Successfully sent help command response to {interaction.user.display_name}")
     except Exception as e:
         logger.error(f"Failed to send help command response: {e}")
         try:
-            await interaction.followup.send("Comando de ajuda temporariamente indisponível. Tente novamente mais tarde.")
+            await interaction.followup.send("Comando de ajuda temporariamente indisponível. Tente novamente mais tarde.", ephemeral=True)
         except:
             pass
 
@@ -698,7 +698,7 @@ async def bet_create(interaction: discord.Interaction, title: str, description: 
 @bot.tree.command(name="bet_list", description="Listar todas as apostas ativas")
 async def bet_list(interaction: discord.Interaction):
     """List all active bets."""
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     async with aiohttp.ClientSession() as session:
         status, response = await make_api_request(
@@ -740,7 +740,7 @@ async def bet_list(interaction: discord.Interaction):
             if len(active_events) > 10:
                 embed.set_footer(text=f"Mostrando 10 de {len(active_events)} apostas ativas")
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="bet_info", description="Ver detalhes de uma aposta específica")
 @app_commands.describe(event_id="ID do evento de aposta para ver detalhes")
@@ -825,7 +825,7 @@ async def bet_info(interaction: discord.Interaction, event_id: str):
         
         embed.set_footer(text="Criado por Administrador")
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="bet_place", description="Fazer uma aposta")
 @app_commands.describe(
@@ -835,7 +835,7 @@ async def bet_info(interaction: discord.Interaction, event_id: str):
 )
 async def bet_place(interaction: discord.Interaction, event_id: str, choice: int, amount: int):
     """Place a bet on a specific choice."""
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     if choice not in [1, 2]:
         embed = discord.Embed(
@@ -843,7 +843,7 @@ async def bet_place(interaction: discord.Interaction, event_id: str, choice: int
             description="A opção deve ser 1 ou 2.",
             color=discord.Color.red()
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         return
     
     if amount <= 0:
@@ -852,7 +852,7 @@ async def bet_place(interaction: discord.Interaction, event_id: str, choice: int
             description="O valor da aposta deve ser positivo.",
             color=discord.Color.red()
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         return
     
     discord_id = str(interaction.user.id)
@@ -864,7 +864,7 @@ async def bet_place(interaction: discord.Interaction, event_id: str, choice: int
             description="Use `/register` primeiro!",
             color=discord.Color.red()
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         return
     
     async with aiohttp.ClientSession() as session:
@@ -879,7 +879,7 @@ async def bet_place(interaction: discord.Interaction, event_id: str, choice: int
                 description=f"Não foi possível encontrar a aposta com ID `{event_id}`.",
                 color=discord.Color.red()
             )
-            await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed, ephemeral=True)
             return
         
         bet_data = {
@@ -918,7 +918,7 @@ async def bet_place(interaction: discord.Interaction, event_id: str, choice: int
                 color=discord.Color.red()
             )
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="bet_finalize", description="Finalizar uma aposta e distribuir prêmios (Admin)")
 @app_commands.describe(
@@ -1080,7 +1080,7 @@ async def bet_cancel(interaction: discord.Interaction, event_id: str):
 @bot.tree.command(name="my_bets", description="Ver suas apostas")
 async def my_bets(interaction: discord.Interaction):
     """Get user's betting history."""
-    await interaction.response.defer()
+    await interaction.response.defer(ephemeral=True)
     
     discord_id = str(interaction.user.id)
     user_data = await get_or_create_user(discord_id, interaction.user.display_name)
@@ -1091,7 +1091,7 @@ async def my_bets(interaction: discord.Interaction):
             description="Use `/register` primeiro!",
             color=discord.Color.red()
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         return
     
     async with aiohttp.ClientSession() as session:
@@ -1105,7 +1105,7 @@ async def my_bets(interaction: discord.Interaction):
                 description="Falha ao obter suas apostas.",
                 color=discord.Color.red()
             )
-            await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed, ephemeral=True)
             return
         
         user_bets = response.get('bets', [])
@@ -1142,7 +1142,7 @@ async def my_bets(interaction: discord.Interaction):
             if len(user_bets) > 10:
                 embed.set_footer(text=f"Mostrando 10 de {len(user_bets)} apostas")
     
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
