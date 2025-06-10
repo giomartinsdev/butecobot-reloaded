@@ -42,6 +42,19 @@ else
     echo "✅ Discord token appears to be configured"
 fi
 
+if grep -q "OPENAI_API_KEY=your_openai_api_key_here" .env; then
+    echo "⚠️  Warning: OpenAI API key still has default value"
+    echo "   Please update OPENAI_API_KEY in .env file"
+else
+    echo "✅ OpenAI API key appears to be configured"
+fi
+if grep -q "GEMINI_API_KEY=your_gemini_api_key_here" .env; then
+    echo "⚠️  Warning: Gemini API key still has default value"
+    echo "   Please update GEMINI_API_KEY in .env file"
+else
+    echo "✅ Gemini API key appears to be configured"
+fi
+
 echo ""
 echo "🔄 Stopping and removing existing containers..."
 docker stop $(docker ps -aq) || true
