@@ -218,7 +218,7 @@ async def daily(interaction: discord.Interaction):
     amount="Quantidade de moedas para transferir",
     description="Descrição opcional para a transferência"
 )
-async def transfer(interaction: discord.Interaction, recipient: discord.Member, amount: int, description: str = "Transfer"):
+async def transfer(interaction: discord.Interaction, recipient: discord.Member, amount: int, description: str = "Transferência de moedas"):
     """Transfer coins between users."""
     await interaction.response.defer(ephemeral=True)
     
@@ -1165,10 +1165,14 @@ async def ai(
             session, 'POST', f"{GENAI_API_URL}/generate", payload
         )
     if status == 200 and response and isinstance(response, dict) and response.get("response"):
+        response_header = f"Prompt: {prompt}\n\n"
+        response_body = response.get("response", "Falha ao obter resposta da IA.")
+        if system_prompt:
+            response_header += f"Orientação da mensagem: {system_prompt}"
+        
         embed = discord.Embed(
             title="🤖 Resposta da IA",
-            description=  f"Prompt: {prompt} \n\n Orientação da mensagem: {system_prompt} \n\n {response['response']}",
-        
+            description=response_header + "\n\n"  + response_body,
             color=discord.Color.purple()
         )
     else:

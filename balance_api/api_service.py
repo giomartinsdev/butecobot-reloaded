@@ -59,7 +59,7 @@ def subtract_balance_operation(op: BalanceOperationCreate):
 
 @app.post("/balance/transaction")
 def create_transaction(transaction: TransactionCreate):
-    logger.info(f"Creating transaction: {transaction.fromUserId} -> {transaction.toUserId}, amount: {transaction.amount}")
+    logger.info(f"Creating transaction: {transaction.senderId} -> {transaction.receiverId}, amount: {transaction.amount}")
     db: Session = SessionLocal()
     try:
         if transaction.senderId == transaction.receiverId:

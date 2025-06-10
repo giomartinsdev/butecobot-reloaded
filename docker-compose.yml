@@ -64,11 +64,6 @@ services:
       - balance-api
       - coin-api
       - bet-api
-    environment:
-      - BALANCE_API_URL=http://balance-api:5000
-      - CLIENT_API_URL=http://client-api:5000
-      - COIN_API_URL=http://coin-api:5000
-      - BET_API_URL=http://bet-api:5000
     env_file:
       - .env
     restart: unless-stopped
