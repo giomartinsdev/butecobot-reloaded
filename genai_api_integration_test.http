@@ -1,0 +1,115 @@
+# filepath: /home/gio/dev/butecobot-reloaded/genai_api_integration_test.http
+### GenAI API Integration Tests
+
+# Test OpenAI provider
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "Explain what microservices architecture is in two sentences.",
+  "provider": "openai"
+}
+
+###
+
+# Test Gemini provider
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "What are the main benefits of using Docker containers?",
+  "provider": "gemini"
+}
+
+###
+
+# Test with system prompt for business/technical fine-tuning
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "What are the best practices for securing a REST API?",
+  "provider": "openai",
+  "system_prompt": "You are an expert in secure API design and cybersecurity. Provide concise and technical advice."
+}
+
+###
+
+# Test with a different model (if supported)
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "Explain the concept of database normalization.",
+  "provider": "gemini",
+  "model": "gemini-1.5-flash"
+}
+
+###
+
+# Test with a creative writing prompt
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "Write a short poem about programming in Python.",
+  "provider": "openai"
+}
+
+###
+
+# Test with a prompt related to the ButecoBot ecosystem
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "Explain how a betting system might work in a Discord bot.",
+  "provider": "gemini",
+  "system_prompt": "You are a helpful assistant explaining Discord bot features to new users."
+}
+
+###
+
+# Test with a longer, more complex prompt
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "Create a step-by-step guide for implementing a basic authentication system in a microservice architecture using JWT tokens.",
+  "provider": "openai",
+  "system_prompt": "You are a senior backend developer explaining concepts to a junior developer."
+}
+
+###
+
+# Test error handling with an invalid provider
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "This should return an error.",
+  "provider": "invalid_provider"
+}
+
+###
+
+# Test error handling with an empty prompt
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "",
+  "provider": "openai"
+}
+
+###
+
+# Test with a programming question
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "Write a Python function that returns the Fibonacci sequence up to n numbers.",
+  "provider": "gemini",
+  "system_prompt": "You are a Python programming expert. Provide clean, well-commented code."
+}

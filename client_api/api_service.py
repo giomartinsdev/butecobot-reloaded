@@ -28,10 +28,13 @@ def register_client(user: UserCreate):
     logger.info(f"Attempting to register new client with discordId: {user.discordId}")
     db: Session = SessionLocal()
     try:
+        logger.info(f"Checking if user already exists with discordId: {user.discordId}")
         existing = db.query(User).filter(User.discordId == user.discordId).first()
         if existing:
             logger.warning(f"User registration failed - user already exists: {user.discordId}")
             raise HTTPException(status_code=409, detail="User already registered")
+        
+        logger.info(f"Creating new user with discordId: {user.discordId}")
         new_user = User(
             discordId=user.discordId,
             name=user.name
@@ -60,6 +63,7 @@ def get_client(id: str):
     logger.info(f"Fetching client by ID: {id}")
     db: Session = SessionLocal()
     try:
+        logger.info(f"Querying database for client with ID: {id}")
         user = db.query(User).filter(User.id == id).first()
         if not user:
             logger.warning(f"Client not found by ID: {id}")
@@ -74,6 +78,7 @@ def get_client_by_discordId(discord_id: str):
     logger.info(f"Fetching client by Discord ID: {discord_id}")
     db: Session = SessionLocal()
     try:
+        logger.info(f"Querying database for client with Discord ID: {discord_id}")
         user = db.query(User).filter(User.discordId == discord_id).first()
         if not user:
             logger.warning(f"Client not found by Discord ID: {discord_id}")
@@ -88,6 +93,7 @@ def update_client(id: str, user: UserUpdate):
     logger.info(f"Updating client: {id}")
     db: Session = SessionLocal()
     try:
+        logger.info(f"Checking if client exists for update: {id}")
         existing_user = db.query(User).filter(User.id == id).first()
         if not existing_user:
             logger.warning(f"Cannot update - client not found: {id}")

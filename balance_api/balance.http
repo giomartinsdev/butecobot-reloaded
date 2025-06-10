@@ -1,7 +1,7 @@
-### economy-api (http://localhost:5001)
+### economy-api (http://localhost:5011)
 
 # Add balance operation (credit)
-POST http://localhost:5001/balance/add
+POST http://localhost:5011/balance/add
 Content-Type: application/json
 
 {
@@ -13,7 +13,7 @@ Content-Type: application/json
 ###
 
 # Subtract balance operation (debit)
-POST http://localhost:5001/balance/subtract
+POST http://localhost:5011/balance/subtract
 Content-Type: application/json
 
 {
@@ -25,7 +25,7 @@ Content-Type: application/json
 ###
 
 # Transaction: transfer from sender to receiver
-POST http://localhost:5001/balance/transaction
+POST http://localhost:5011/balance/transaction
 Content-Type: application/json
 
 {
@@ -38,9 +38,9 @@ Content-Type: application/json
 ###
 
 # Get user balance
-GET http://localhost:5001/balance/5f6c55bf-16e6-46e3-acaa-374826fa2df8
+GET http://localhost:5011/balance/5f6c55bf-16e6-46e3-acaa-374826fa2df8
 
 ###
 
 # Get all operations for a user
-GET http://localhost:5001/balance/operations/b21c0a6d-5d29-43a1-83da-b4e268dc40ae
+GET http://localhost:5011/balance/operations/b21c0a6d-5d29-43a1-83da-b4e268dc40ae

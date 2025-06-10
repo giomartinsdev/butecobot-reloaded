@@ -1,7 +1,7 @@
 ### GenAI API HTTP test file
 
 # Test OpenAI provider
-POST http://localhost:5004/generate
+POST http://localhost:5014/generate
 Content-Type: application/json
 
 {
@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ### Test Gemini provider
-POST http://localhost:5004/generate
+POST http://localhost:5014/generate
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 }
 
 ### Test with system prompt (business fine-tuning)
-POST http://localhost:5004/generate
+POST http://localhost:5014/generate
 Content-Type: application/json
 
 {
@@ -29,7 +29,7 @@ Content-Type: application/json
 }
 
 ### Test with custom model (if supported)
-POST http://localhost:5004/generate
+POST http://localhost:5014/generate
 Content-Type: application/json
 
 {

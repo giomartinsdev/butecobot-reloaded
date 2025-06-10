@@ -15,7 +15,7 @@ Handles all betting operations for the Chorume Bot ecosystem.
    ```
 2. Run the service:
    ```sh
-   uvicorn api_service:app --host 0.0.0.0 --port 5003 --reload
+   uvicorn api_service:app --host 0.0.0.0 --port 5013 --reload
    ```
 
 ## Docker Compose

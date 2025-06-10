@@ -1,7 +1,7 @@
 ### Test Coin API Integration
 
 # Test user creation first
-POST http://localhost:5000/client/
+POST http://localhost:5010/client/
 Content-Type: application/json
 
 {
@@ -12,32 +12,32 @@ Content-Type: application/json
 ###
 
 # Check daily claim status
-GET http://localhost:5002/daily-coins/status/123456789012345678
+GET http://localhost:5012/daily-coins/status/8ab25346-12e2-49ce-89c3-e37c5ac10a06
 
 ###
 
 # Claim daily coins
-POST http://localhost:5002/daily-coins
+POST http://localhost:5012/daily-coins
 Content-Type: application/json
 
 {
-  "clientId": "123456789012345678"
+  "clientId": "8ab25346-12e2-49ce-89c3-e37c5ac10a06"
 }
 
 ###
 
 # Check balance after claim
-GET http://localhost:5001/balance/123456789012345678
+GET http://localhost:5011/balance/8ab25346-12e2-49ce-89c3-e37c5ac10a06
 
 ###
 
 # Get claim history
-GET http://localhost:5002/daily-coins/history/123456789012345678
+GET http://localhost:5012/daily-coins/history/8ab25346-12e2-49ce-89c3-e37c5ac10a06
 
 ###
 
 # Test transfer (create second user first)
-POST http://localhost:5000/client/
+POST http://localhost:5010/client/
 Content-Type: application/json
 
 {
@@ -48,12 +48,12 @@ Content-Type: application/json
 ###
 
 # Transfer coins
-POST http://localhost:5001/balance/transaction
+POST http://localhost:5011/balance/transaction
 Content-Type: application/json
 
 {
-  "senderId": "123456789012345678",
-  "receiverId": "987654321098765432",
+  "senderId": "8ab25346-12e2-49ce-89c3-e37c5ac10a06",
+  "receiverId": "9bdf0add-0b13-438a-a531-43bceb8e9b67",
   "amount": 25,
   "description": "Test transfer"
 }
@@ -61,8 +61,189 @@ Content-Type: application/json
 ###
 
 # Check both balances
-GET http://localhost:5001/balance/123456789012345678
+GET http://localhost:5011/balance/8ab25346-12e2-49ce-89c3-e37c5ac10a06
 
 ###
 
-GET http://localhost:5001/balance/987654321098765432
+GET http://localhost:5011/balance/9bdf0add-0b13-438a-a531-43bceb8e9b67
+
+###
+
+# Create a new betting event
+POST http://localhost:5013/bet/event
+Content-Type: application/json
+
+{
+  "title": "Test Football Match - Team A vs Team B",
+  "description": "Which team will win the test match?",
+  "option1": "Team A",
+  "option2": "Team B"
+}
+
+###
+
+# Get all active betting events
+GET http://localhost:5013/bet/events
+
+
+###
+# Both users place bets on the created event
+POST http://localhost:5013/bet/place
+Content-Type: application/json
+
+{
+  "userId": "8ab25346-12e2-49ce-89c3-e37c5ac10a06",
+  "betEventId": "dc856b28-47c1-49aa-a688-486b953cedf9",
+  "chosenOption": 1,
+  "amount": 1
+}
+
+###
+POST http://localhost:5013/bet/place
+Content-Type: application/json
+
+{
+  "userId": "9bdf0add-0b13-438a-a531-43bceb8e9b67",
+  "betEventId": "dc856b28-47c1-49aa-a688-486b953cedf9",
+  "chosenOption": 2,
+  "amount": 1
+}
+
+
+###
+# Check both users' balances after placing bets
+GET http://localhost:5011/balance/8ab25346-12e2-49ce-89c3-e37c5ac10a06
+
+###
+GET http://localhost:5011/balance/9bdf0add-0b13-438a-a531-43bceb8e9b67
+
+###
+# Get user bets for both users
+GET http://localhost:5013/bet/user/8ab25346-12e2-49ce-89c3-e37c5ac10a06
+
+###
+# Get specific event details
+GET http://localhost:5013/bet/event/dc856b28-47c1-49aa-a688-486b953cedf9
+
+###
+# Finalize the betting event (admin action)
+POST http://localhost:5013/bet/finalize
+Content-Type: application/json
+
+{
+  "betEventId": "dc856b28-47c1-49aa-a688-486b953cedf9",
+  "winningOption": 1
+}
+
+###
+# Check if the event is now marked as finished
+GET http://localhost:5013/bet/event/dc856b28-47c1-49aa-a688-486b953cedf9
+
+###
+# Get finished events
+GET http://localhost:5013/bet/events/finished
+
+###
+# Check user balance after winning
+GET http://localhost:5011/balance/8ab25346-12e2-49ce-89c3-e37c5ac10a06
+
+###
+# Check user balance after losing
+GET http://localhost:5011/balance/9bdf0add-0b13-438a-a531-43bceb8e9b67
+
+###
+# Create a new betting event for testing cancellation
+POST http://localhost:5013/bet/event
+Content-Type: application/json
+
+{
+  "title": "Test Cancellation Event",
+  "description": "This event will be cancelled.",
+  "option1": "Option 1",
+  "option2": "Option 2"
+}
+
+###
+# bet on the cancellation event
+POST http://localhost:5013/bet/place
+Content-Type: application/json
+
+{
+  "userId": "8ab25346-12e2-49ce-89c3-e37c5ac10a06",
+  "betEventId": "36168d04-61a4-4651-878c-718e8a03a868",
+  "chosenOption": 1,
+  "amount": 2
+}
+
+###
+# Cancel the betting event
+DELETE http://localhost:5013/bet/event/36168d04-61a4-4651-878c-718e8a03a868
+Content-Type: application/json
+
+###
+# Check if the event is cancelled
+GET http://localhost:5013/bet/event/36168d04-61a4-4651-878c-718e8a03a868
+
+###
+# Get all betting events (should not include cancelled event)
+GET http://localhost:5013/bet/events
+
+###
+# Check user balance after cancellation
+GET http://localhost:5011/balance/8ab25346-12e2-49ce-89c3-e37c5ac10a06
+
+###
+# Check if the user can still place bets after cancellation
+POST http://localhost:5013/bet/place
+Content-Type: application/json
+
+{
+  "userId": "8ab25346-12e2-49ce-89c3-e37c5ac10a06",
+  "betEventId": "36168d04-61a4-4651-878c-718e8a03a868",
+  "chosenOption": 1,
+  "amount": 10
+}
+
+###
+#prompt generation tests
+# Test with a simple prompt on gemini
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "What is the capital of France?",
+  "provider": "gemini"
+}
+
+###
+# Test with chosing a specific model on gemini
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "What is the capital of brazil?",
+  "provider": "gemini",
+  "model": "gemini-1.5-flash"
+}
+
+###
+# Test with a system prompt for gemini
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "What is the capital of somalia?",
+  "provider": "gemini",
+  "system_prompt": "You are an expert in geography. Provide concise and accurate answers."
+}
+
+###
+# test with a prompt to OpenAI
+POST http://localhost:5014/generate
+Content-Type: application/json
+
+{
+  "prompt": "What is the capital of France?",
+  "provider": "openai"
+}
+

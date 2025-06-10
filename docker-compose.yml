@@ -4,9 +4,9 @@ services:
     build: ./balance_api
     container_name: balance_api_container
     ports:
-      - "5001:5000"
+      - "5011:5000"
     networks:
-      - chorume_network
+      - buteco_network
     env_file:
       - .env
     restart: unless-stopped
@@ -15,9 +15,9 @@ services:
     build: ./coin_api
     container_name: coin_api_container
     ports:
-      - "5002:5000"
+      - "5012:5000"
     networks:
-      - chorume_network
+      - buteco_network
     depends_on:
       - postgres-db
       - balance-api
@@ -30,9 +30,9 @@ services:
     build: ./bet_api
     container_name: bet_api_container
     ports:
-      - "5003:5000"
+      - "5013:5000"
     networks:
-      - chorume_network
+      - buteco_network
     depends_on:
       - balance-api
       - client-api
@@ -42,22 +42,22 @@ services:
 
   client-api:
     build: ./client_api
-    container_name: client_api_container
+    container_name: client_api_container2
     ports:
-      - "5000:5000"
+      - "5010:5000"
     networks:
-      - chorume_network
+      - buteco_network
     depends_on:
       - postgres-db
     env_file:
       - .env
     restart: unless-stopped
 
-  chorume-bot:
-    build: ./chorume_bot
-    container_name: chorume_bot_container
+  buteco-bot:
+    build: ./buteco_bot
+    container_name: buteco_bot_container
     networks:
-      - chorume_network
+      - buteco_network
     depends_on:
       - client-api
       - db-migration-service
@@ -80,7 +80,7 @@ services:
     volumes:
       - economy_data:/var/lib/postgresql/data
     networks:
-      - chorume_network
+      - buteco_network
     env_file:
       - .env
     restart: unless-stopped
@@ -102,7 +102,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
     networks:
-      - chorume_network
+      - buteco_network
     volumes:
       - ./db_migration_service/src/migration:/app/src/migration
     env_file:
@@ -112,9 +112,9 @@ services:
     build: ./genai_api
     container_name: genai_api_container
     ports:
-      - "5004:5000"
+      - "5014:5000"
     networks:
-      - chorume_network
+      - buteco_network
     depends_on:
       - postgres-db
     env_file:
@@ -122,7 +122,7 @@ services:
     restart: unless-stopped
 
 networks:
-  chorume_network:
+  buteco_network:
     driver: bridge
 
 volumes: 

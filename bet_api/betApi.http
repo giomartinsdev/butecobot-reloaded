@@ -1,5 +1,5 @@
 ### Create a new betting event
-POST http://localhost:5003/bet/event
+POST http://localhost:5013/bet/event
 Content-Type: application/json
 
 {
@@ -10,13 +10,13 @@ Content-Type: application/json
 }
 
 ### Get all active events
-GET http://localhost:5003/bet/events
+GET http://localhost:5013/bet/events
 
 ### Get finished events
-GET http://localhost:5003/bet/events/finished
+GET http://localhost:5013/bet/events/finished
 
 ### Place a bet (replace with actual user ID and event ID)
-POST http://localhost:5003/bet/place
+POST http://localhost:5013/bet/place
 Content-Type: application/json
 
 {
@@ -27,13 +27,13 @@ Content-Type: application/json
 }
 
 ### Get user bets (replace with actual user ID)
-GET http://localhost:5003/bet/user/user123
+GET http://localhost:5013/bet/user/user123
 
 ### Get event details (replace with actual event ID)
-GET http://localhost:5003/bet/event/event123
+GET http://localhost:5013/bet/event/event123
 
 ### Finalize betting event (replace with actual event ID)
-POST http://localhost:5003/bet/finalize
+POST http://localhost:5013/bet/finalize
 Content-Type: application/json
 
 {
@@ -42,4 +42,4 @@ Content-Type: application/json
 }
 
 ### Cancel betting event and refund (replace with actual event ID)
-DELETE http://localhost:5003/bet/event/event123
+DELETE http://localhost:5013/bet/event/event123

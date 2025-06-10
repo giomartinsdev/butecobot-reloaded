@@ -43,13 +43,22 @@ else
 fi
 
 echo ""
+echo "🔄 Stopping and removing existing containers..."
+docker stop $(docker ps -aq) || true
+docker volume rm -f butecobot-reloaded_economy_data
+
+echo ""
+echo "🔄 Building and starting the database migration service..."
+docker-compose run --rm db-migration-service npm run migration:run
+
+echo ""
 echo "🚀 Starting Chorume Bot Ecosystem..."
 echo "This will build and start all containers:"
-echo "  - Client API (port 5000)"
-echo "  - Balance API (port 5001)"
-echo "  - Coin API (port 5002)"
-echo "  - Bet API (port 5003)"
-echo "  - GenAI API (port 5004)"
+echo "  - Client API (port 5010)"
+echo "  - Balance API (port 5011)"
+echo "  - Coin API (port 5012)"
+echo "  - Bet API (port 5013)"
+echo "  - GenAI API (port 5014)"
 echo "  - Discord Bot"
 echo "  - PostgreSQL Database"
 echo ""
@@ -76,18 +85,18 @@ check_health() {
     fi
 }
 
-check_health "Client API" "http://localhost:5000/health"
-check_health "Balance API" "http://localhost:5001/health"
-check_health "Coin API" "http://localhost:5002/health"
-check_health "Bet API" "http://localhost:5003/health"
-check_health "GenAI API" "http://localhost:5004/health"
+check_health "Client API" "http://localhost:5010/health"
+check_health "Balance API" "http://localhost:5011/health"
+check_health "Coin API" "http://localhost:5012/health"
+check_health "Bet API" "http://localhost:5013/health"
+check_health "GenAI API" "http://localhost:5014/health"
 
 # Discord bot health is via logs
-BOT_LOGS=$(docker-compose logs --tail=20 chorume-bot 2>/dev/null)
+BOT_LOGS=$(docker-compose logs --tail=20 buteco-bot 2>/dev/null)
 if echo "$BOT_LOGS" | grep -q "Logged in as"; then
     echo "✅ Discord bot logged in successfully"
 else
-    echo "⚠️  Discord bot status unclear - check logs with: docker-compose logs chorume-bot"
+    echo "⚠️  Discord bot status unclear - check logs with: docker-compose logs buteco-bot"
 fi
 
 echo ""
