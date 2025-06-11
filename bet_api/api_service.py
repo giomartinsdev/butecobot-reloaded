@@ -175,7 +175,6 @@ def place_bet(bet: UserBetCreate):
     
     db = SessionLocal()
     try:
-        # Check if event exists and is active
         event = db.query(BetEvent).filter(
             BetEvent.id == bet.betEventId,
             BetEvent.isActive == True,
@@ -185,7 +184,6 @@ def place_bet(bet: UserBetCreate):
         if not event:
             raise HTTPException(status_code=404, detail="Event not found or not active")
         
-        # Check if user already bet on this event
         existing_bet = db.query(UserBet).filter(
             UserBet.userId == bet.userId,
             UserBet.betEventId == bet.betEventId
@@ -194,15 +192,12 @@ def place_bet(bet: UserBetCreate):
         if existing_bet:
             raise HTTPException(status_code=400, detail="User already placed a bet on this event")
         
-        # Check user balance
         if not check_user_balance(bet.userId, bet.amount):
             raise HTTPException(status_code=400, detail="Insufficient balance")
         
-        # Subtract balance from user
         if not subtract_user_balance(bet.userId, bet.amount, f"Bet on {event.title}"):
             raise HTTPException(status_code=500, detail="Failed to subtract balance")
         
-        # Create the bet
         db_bet = UserBet(
             userId=bet.userId,
             betEventId=bet.betEventId,
@@ -211,7 +206,6 @@ def place_bet(bet: UserBetCreate):
         )
         db.add(db_bet)
         
-        # Update event totals
         event.totalBetAmount += bet.amount
         if bet.chosenOption == 1:
             event.option1BetAmount += bet.amount
@@ -242,7 +236,6 @@ def finalize_bet(finalize_data: BetFinalize):
     
     db = SessionLocal()
     try:
-        # Get the event
         event = db.query(BetEvent).filter(
             BetEvent.id == finalize_data.betEventId,
             BetEvent.isActive == True,
@@ -252,33 +245,27 @@ def finalize_bet(finalize_data: BetFinalize):
         if not event:
             raise HTTPException(status_code=404, detail="Event not found or already finished")
         
-        # Get all winning bets
         winning_bets = db.query(UserBet).filter(
             UserBet.betEventId == finalize_data.betEventId,
             UserBet.chosenOption == finalize_data.winningOption
         ).all()
         
-        # Calculate total winning bet amount
         winning_total = sum(bet.amount for bet in winning_bets)
         
         if winning_total == 0:
-            # No winners, mark as finished
             event.isFinished = True
             event.winningOption = finalize_data.winningOption
             db.commit()
             logger.info(f"Event {event.id} finished with no winners")
             return {"message": "Event finished with no winners"}
         
-        # Distribute winnings proportionally
         total_pool = event.totalBetAmount
         distributions = []
         
         for bet in winning_bets:
-            # Calculate proportion of winnings
             proportion = bet.amount / winning_total
             winnings = int(total_pool * proportion)
             
-            # Add winnings to user balance
             if add_user_balance(
                 bet.userId, 
                 winnings, 
@@ -292,7 +279,6 @@ def finalize_bet(finalize_data: BetFinalize):
                 })
                 logger.info(f"Distributed {winnings} to user {bet.userId}")
         
-        # Mark event as finished
         event.isFinished = True
         event.winningOption = finalize_data.winningOption
         db.commit()
@@ -357,7 +343,6 @@ def get_event_details(event_id: str):
         if not event:
             raise HTTPException(status_code=404, detail="Event not found")
         
-        # Get all bets for this event
         bets = db.query(UserBet).filter(UserBet.betEventId == event_id).all()
         
         return {
@@ -402,17 +387,14 @@ def cancel_bet_event(event_id: str):
         if not event:
             raise HTTPException(status_code=404, detail="Event not found or already finished")
         
-        # Get all bets for this event
         bets = db.query(UserBet).filter(UserBet.betEventId == event_id).all()
         
-        # Refund all bets
         refunded_count = 0
         for bet in bets:
             if add_user_balance(bet.userId, bet.amount, f"Refund for cancelled event: {event.title}"):
                 refunded_count += 1
                 logger.info(f"Refunded {bet.amount} to user {bet.userId}")
         
-        # Mark event as inactive
         event.isActive = False
         db.commit()
         
