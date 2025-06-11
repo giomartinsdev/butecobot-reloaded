@@ -119,5 +119,5 @@ echo "2. Test bot commands like /help, /ai, /register, /balance, etc."
 echo "3. Check logs with: docker-compose logs [service-name]"
 echo "4. Stop with: docker-compose down"
 echo ""
-echo "🎉 Setup complete! Your Chorume Bot Ecosystem is running!"
+echo "🎉 Setup complete! Your Buteco Bot Ecosystem is running!"
 
