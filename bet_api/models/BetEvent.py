@@ -7,7 +7,7 @@ Base = declarative_base()
 
 class BetEvent(Base):
     __tablename__ = "bet_event"
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, nullable=False)
     description = Column(String, nullable=True)
     option1 = Column(String, nullable=False)

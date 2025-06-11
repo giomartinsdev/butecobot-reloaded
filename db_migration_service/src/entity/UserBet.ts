@@ -2,14 +2,14 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 @Entity({ name: "user_bet" })
 export class UserBet {
-    @PrimaryGeneratedColumn("uuid")
-    id!: string;
+    @PrimaryGeneratedColumn()
+    id!: number;
 
     @Column()
     userId!: string;
 
     @Column()
-    betEventId!: string;
+    betEventId!: number;
 
     @Column()
     chosenOption!: number;
