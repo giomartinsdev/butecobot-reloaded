@@ -46,6 +46,8 @@ The Chorume Bot provides a complete economy system and AI assistant through Disc
 
 The system uses a microservices architecture with Docker containers communicating through a shared network. Each container is independently deployable and scalable, making it easy to add new features or support additional programming languages.
 
+for implement the your microsservice see the [MICROSERVICE_GUIDE](MICROSERVICE_GUIDE.md) 
+
 ![System Architeture](image.png)
 
 ## Features
