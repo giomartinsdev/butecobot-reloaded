@@ -68,7 +68,7 @@ def help_commands(bot):
         await interaction.response.defer(ephemeral=True)
         
         embed = discord.Embed(
-            title="🤖 Chorume Bot - Comandos",
+            title="🤖 Buteco Bot - Comandos",
             description="Aqui estão todos os comandos slash disponíveis:",
             color=discord.Color.blue()
         )

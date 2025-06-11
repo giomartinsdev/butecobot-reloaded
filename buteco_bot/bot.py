@@ -1,5 +1,5 @@
 import logging
-from models.ChorumeBot import ChorumeBot
+from models.ButecoBot import ButecoBot
 from tools.constants import DISCORD_TOKEN
 from commands.client import client_commands
 from commands.coins import coins_commands
@@ -14,7 +14,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-bot = ChorumeBot()
+bot = ButecoBot()
 
 client_commands(bot)
 coins_commands(bot)

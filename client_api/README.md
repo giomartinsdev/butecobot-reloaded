@@ -1,6 +1,6 @@
 # Client API
 
-Handles user management for the Chorume Bot ecosystem.
+Handles user management for the Buteco Bot ecosystem.
 
 ## Features
 - Register, update, and delete users

@@ -1,10 +1,10 @@
-# Chorume Bot Ecosystem
+# Buteco Bot Ecosystem
 
 A comprehensive Discord bot ecosystem built with Docker containers, featuring economy management, daily rewards, user transfers, AI integration, and a robust microservices architecture.
 
 ## 🎮 Discord Bot Features
 
-The Chorume Bot provides a complete economy system and AI assistant through Discord slash commands:
+The Buteco Bot provides a complete economy system and AI assistant through Discord slash commands:
 
 ### 💰 Economy Commands
 - `/register` - Join the economy system
@@ -46,7 +46,7 @@ The Chorume Bot provides a complete economy system and AI assistant through Disc
 
 The system uses a microservices architecture with Docker containers communicating through a shared network. Each container is independently deployable and scalable, making it easy to add new features or support additional programming languages.
 
-for implement the your microsservice see the [MICROSERVICE_GUIDE](MICROSERVICE_GUIDE.md) 
+for implement your microsservice see the [MICROSERVICE_GUIDE](MICROSERVICE_GUIDE.md) 
 
 ![System Architeture](image.png)
 

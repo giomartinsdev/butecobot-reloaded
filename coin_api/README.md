@@ -1,6 +1,6 @@
 # Coin API
 
-Handles daily coin claims for the Chorume Bot ecosystem.
+Handles daily coin claims for the Buteco Bot ecosystem.
 
 ## Features
 - Daily coin claim and claim history

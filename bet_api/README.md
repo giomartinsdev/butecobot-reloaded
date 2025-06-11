@@ -1,6 +1,6 @@
 # Bet API
 
-Handles all betting operations for the Chorume Bot ecosystem.
+Handles all betting operations for the Buteco Bot ecosystem.
 
 ## Features
 - Create, list, and manage betting events

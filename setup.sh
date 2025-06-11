@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Chorume Bot Ecosystem - Unified Startup Script
+# Buteco Bot Ecosystem - Unified Startup Script
 # This script sets up the environment, builds, and starts all containers for the system
 
 set -e
@@ -65,7 +65,7 @@ echo "🔄 Building and starting the database migration service..."
 docker-compose run --rm db-migration-service npm run migration:run
 
 echo ""
-echo "🚀 Starting Chorume Bot Ecosystem..."
+echo "🚀 Starting Buteco Bot Ecosystem..."
 echo "This will build and start all containers:"
 echo "  - Client API (port 5010)"
 echo "  - Balance API (port 5011)"

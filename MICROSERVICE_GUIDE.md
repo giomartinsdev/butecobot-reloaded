@@ -1,6 +1,6 @@
-# Adding a New Microservice to Chorume Bot Ecosystem
+# Adding a New Microservice to Buteco Bot Ecosystem
 
-This guide will walk you through the steps of implementing a new microservice for the Chorume Bot ecosystem. The system follows a microservice architecture where each service is independently deployable and can be written in any programming language.
+This guide will walk you through the steps of implementing a new microservice for the Buteco Bot ecosystem. The system follows a microservice architecture where each service is independently deployable and can be written in any programming language.
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@ This guide will walk you through the steps of implementing a new microservice fo
 
 ## Overview of the Architecture
 
-The Chorume Bot ecosystem consists of several microservices that communicate with each other:
+The Buteco Bot ecosystem consists of several microservices that communicate with each other:
 
 - **Client API**: Manages user information
 - **Balance API**: Handles user balances and transactions
@@ -54,7 +54,7 @@ Each service has its own Docker container and communicates over a shared Docker 
    ```md
    # My New Service
 
-   Description of what this service does for the Chorume Bot ecosystem.
+   Description of what this service does for the Buteco Bot ecosystem.
 
    ## Features
    - List key features
@@ -485,7 +485,7 @@ services:
 
 ---
 
-This documentation should give you a complete guide for implementing and integrating a new microservice into the Chorume Bot ecosystem. Remember to follow the project's coding standards and error handling practices to maintain consistency across services.
+This documentation should give you a complete guide for implementing and integrating a new microservice into the Buteco Bot ecosystem. Remember to follow the project's coding standards and error handling practices to maintain consistency across services.
 
 ### The Importance of Dockerfile in Your Microservice
 
@@ -496,7 +496,7 @@ The Dockerfile is a critical component of your microservice for several reasons:
 3. **Isolation**: Keeps your service and its dependencies separate from other microservices
 4. **Scalability**: Makes it easy to scale your service horizontally when needed
 5. **Portability**: Allows your service to run on any system that supports Docker
-6. **Integration**: Enables seamless integration with the existing Chorume Bot ecosystem
+6. **Integration**: Enables seamless integration with the existing Buteco Bot ecosystem
 
 A well-crafted Dockerfile should:
 - Use an appropriate base image for your language
@@ -509,7 +509,7 @@ A well-crafted Dockerfile should:
 
 ## Dockerfile Best Practices for Your Microservice
 
-Creating an effective Dockerfile is essential for the reliability and performance of your microservice in the Chorume Bot ecosystem. Below are examples of well-structured Dockerfiles for different programming languages:
+Creating an effective Dockerfile is essential for the reliability and performance of your microservice in the Buteco Bot ecosystem. Below are examples of well-structured Dockerfiles for different programming languages:
 
 ### Python (FastAPI/Flask) Dockerfile
 
@@ -597,4 +597,4 @@ ENTRYPOINT ["dotnet", "YourServiceName.dll"]
    - Implement Docker health checks for better orchestration
    - Example: `HEALTHCHECK CMD curl -f http://localhost:5000/health || exit 1`
 
-Following these best practices ensures your microservice will integrate smoothly with the Chorume Bot ecosystem while maintaining security, performance, and reliability.
+Following these best practices ensures your microservice will integrate smoothly with the Buteco Bot ecosystem while maintaining security, performance, and reliability.

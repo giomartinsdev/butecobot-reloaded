@@ -1,6 +1,6 @@
 # Balance API
 
-Handles all balance and transaction operations for the Chorume Bot ecosystem.
+Handles all balance and transaction operations for the Buteco Bot ecosystem.
 
 ## Features
 - Add, subtract, and transfer coins between users

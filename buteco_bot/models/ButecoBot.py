@@ -8,7 +8,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class ChorumeBot(commands.Bot):
+class ButecoBot(commands.Bot):
 
     def __init__(self):
         intents = discord.Intents.default()
@@ -18,7 +18,7 @@ class ChorumeBot(commands.Bot):
         super().__init__(
             command_prefix='!',
             intents=intents,
-            description="Chorume Bot - Sistema de Economia e Gerenciamento"
+            description="Buteco Bot - Sistema de Economia e Gerenciamento"
         )
         
     async def setup_hook(self):

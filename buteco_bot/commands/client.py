@@ -12,7 +12,7 @@ def client_commands(bot):
         if user:
             embed = discord.Embed(
                 title="✅ Registro Realizado com Sucesso!",
-                description=f"Bem-vindo à Economia Chorume, {interaction.user.mention}!",
+                description=f"Bem-vindo à Economiac do Buteco, {interaction.user.mention}!",
                 color=discord.Color.green()
             )
             embed.add_field(name="ID do Usuário", value=user.get('id', 'Desconhecido'), inline=False)
