@@ -42,7 +42,7 @@ services:
 
   client-api:
     build: ./client_api
-    container_name: client_api_container2
+    container_name: client_api_container
     ports:
       - "5010:5000"
     networks:

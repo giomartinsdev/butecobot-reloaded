@@ -126,6 +126,27 @@ def help_commands(bot):
             except:
                 pass
 
+    @bot.tree.command(name="codigo", description="Pega o repositório do bot no GitHub")
+    async def codigo(interaction: discord.Interaction):
+        """Get the bot's source code repository."""
+        await interaction.response.defer(ephemeral=True)
+        
+        embed = discord.Embed(
+            title="📂 Código do Bot",
+            description="Você pode encontrar o código fonte do Bot do Buteco no GitHub:",
+            color=discord.Color.green()
+        )
+        embed.add_field(
+            name="Repositório",
+            value="[Buteco Bot no GitHub](https://github.com/butecodosdevs/butecobot-reloaded)",
+            inline=False
+        )
+        embed.set_thumbnail(url="https://github.com/butecodosdevs/butecobot-reloaded")
+        embed.set_footer(text="Aceita Contribuições em qualquer linguagem \n\nLeia o README.md e siga o MICROSERVICE_GUIDE.md !")
+        await interaction.followup.send(embed=embed, ephemeral=True)
+
+
+
     @bot.tree.error
     async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
         """Handle application command errors."""
