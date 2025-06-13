@@ -21,7 +21,7 @@ The Buteco Bot ecosystem consists of several microservices that communicate with
 - **Balance API**: Handles user balances and transactions
 - **Coin API**: Manages daily coin claims
 - **Bet API**: Handles betting events and user bets
-- **GenAI API**: Provides AI assistant functionality
+- **AI API**: Provides AI assistant functionality
 - **Bot Service**: Discord bot that interacts with users
 - **DB Migration Service**: Handles database schema migrations
 
@@ -547,24 +547,27 @@ CMD ["node", "index.js"]
 ### .NET Dockerfile
 
 ```dockerfile
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
+EXPOSE 80
+EXPOSE 443
 
-COPY *.csproj ./
-RUN dotnet restore
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+COPY ["your_project/your_project.csproj", "ai_api/"]
+RUN dotnet restore "your_project/ayour_project.csproj"
+COPY . .
+WORKDIR "/src/your_project"
+RUN dotnet build "your_project.csproj" -c Release -o /app/build
 
-COPY . ./
-RUN dotnet publish -c Release -o out
+FROM build AS publish
+RUN dotnet publish "your_project.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM base AS final
 WORKDIR /app
-COPY --from=build /app/out .
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "your_project.dll"]
 
-EXPOSE 5000
-
-ENV ASPNETCORE_URLS=http://+:5000
-
-ENTRYPOINT ["dotnet", "YourServiceName.dll"]
 ```
 
 ### Important Considerations for Your Dockerfile

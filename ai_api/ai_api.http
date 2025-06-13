@@ -1,0 +1,96 @@
+### Health Check (Local Development)
+GET http://localhost:5000/GenAI/health
+
+### Health Check (Docker)
+GET http://localhost:5015/GenAI/health
+
+### Generate Text with OpenAI (Local Development)
+POST http://localhost:5000/GenAI/generate
+Content-Type: application/json
+
+{
+  "prompt": "Tell me a joke about programming",
+  "provider": "openai",
+  "model": "gpt-3.5-turbo"
+}
+
+### Generate Text with OpenAI and System Prompt
+POST http://localhost:5001/GenAI/generate
+Content-Type: application/json
+
+{
+  "prompt": "Create a function to calculate Fibonacci numbers",
+  "provider": "openai",
+  "systemPrompt": "You are a helpful coding assistant that provides concise C# code examples",
+  "model": "gpt-3.5-turbo"
+}
+
+### Generate Text with Gemini
+POST http://localhost:5001/GenAI/generate
+Content-Type: application/json
+
+{
+  "prompt": "Explain how to implement binary search",
+  "provider": "gemini",
+  "model": "gemini-1.5-flash"
+}
+
+### Generate Text with Gemini and System Prompt
+# Note: Gemini doesn't support system role directly, so the system prompt 
+# is combined with the user prompt as plain text with newlines
+POST http://localhost:5001/GenAI/generate
+Content-Type: application/json
+
+{
+  "prompt": "Write a function to reverse a linked list",
+  "provider": "gemini",
+  "systemPrompt": "You are a helpful coding assistant that provides concise Python code examples",
+  "model": "gemini-1.5-flash"
+}
+
+### Generate Text with Default Provider
+POST http://localhost:5001/GenAI/generate
+Content-Type: application/json
+
+{
+  "prompt": "Write a short poem about clouds"
+}
+
+### Error: Empty Prompt
+POST http://localhost:5001/GenAI/generate
+Content-Type: application/json
+
+{
+  "prompt": "",
+  "provider": "openai"
+}
+
+### Error: Invalid Provider
+POST http://localhost:5001/GenAI/generate
+Content-Type: application/json
+
+{
+  "prompt": "Hello, world!",
+  "provider": "invalid-provider"
+}
+
+### Error: Invalid Model (for OpenAI)
+POST http://localhost:5001/GenAI/generate
+Content-Type: application/json
+
+{
+  "prompt": "Hello, world!",
+  "provider": "openai",
+  "model": "nonexistent-model"
+}
+
+### Long Request with System Instructions
+POST http://localhost:5001/GenAI/generate
+Content-Type: application/json
+
+{
+  "prompt": "Create a detailed step-by-step tutorial for implementing a simple REST API in C# using ASP.NET Core. Include best practices, error handling, and dependency injection examples.",
+  "provider": "openai",
+  "systemPrompt": "You are an expert software developer specializing in C# and ASP.NET Core. You provide detailed, clear, and well-structured tutorials with code examples. Format your response with markdown headings and code blocks for clarity.",
+  "model": "gpt-3.5-turbo"
+}

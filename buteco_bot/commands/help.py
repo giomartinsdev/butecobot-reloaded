@@ -3,7 +3,7 @@ import aiohttp
 from discord import app_commands
 from tools.constants import (
     BALANCE_API_URL, CLIENT_API_URL, COIN_API_URL,
-    BET_API_URL, GENAI_API_URL
+    BET_API_URL, AI_API_URL
 )
 import logging
 
@@ -25,7 +25,7 @@ def help_commands(bot):
             ("Client API", f"{CLIENT_API_URL}/health"),
             ("Coin API", f"{COIN_API_URL}/health"),
             ("Bet API", f"{BET_API_URL}/health"),
-            ("GenAI API", f"{GENAI_API_URL}/health")
+            ("AI API", f"{AI_API_URL}/health")
         ]
         
         embed = discord.Embed(

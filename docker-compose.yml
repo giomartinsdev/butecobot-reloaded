@@ -53,6 +53,24 @@ services:
       - .env
     restart: unless-stopped
 
+  ai-api:
+    build: 
+      context: .
+      dockerfile: ./ai_api/Dockerfile
+    container_name: ai_api_container
+    ports:
+      - "5015:8080"
+    networks:
+      - buteco_network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GENAI_DEFAULT_PROVIDER=${GENAI_DEFAULT_PROVIDER:-openai}
+    env_file:
+      - .env
+    restart: unless-stopped
+
   buteco-bot:
     build: ./buteco_bot
     container_name: buteco_bot_container
@@ -64,6 +82,7 @@ services:
       - balance-api
       - coin-api
       - bet-api
+      - ai-api
     env_file:
       - .env
     restart: unless-stopped
@@ -107,19 +126,6 @@ services:
       - ./db_migration_service/src/migration:/app/src/migration
     env_file:
       - .env
-
-  genai-api:
-    build: ./genai_api
-    container_name: genai_api_container
-    ports:
-      - "5014:5000"
-    networks:
-      - buteco_network
-    depends_on:
-      - postgres-db
-    env_file:
-      - .env
-    restart: unless-stopped
 
 networks:
   buteco_network:

@@ -4,3 +4,7 @@ venv
 __pycache__
 dist
 node_modules
+appsettings.Development.json
+obj
+bin
+Properties

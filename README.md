@@ -69,7 +69,7 @@ Each microservice has its own README with usage and endpoints:
 - `balance_api/README.md` - Balance and transactions
 - `coin_api/README.md` - Daily coins
 - `bet_api/README.md` - Betting system
-- `genai_api/README.md` - AI assistant
+- `ai_api/README.md` - AI assistant
 
 ## Development & Contribution
 
