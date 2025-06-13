@@ -1,11 +1,8 @@
-### Health Check (Local Development)
-GET http://localhost:5000/GenAI/health
-
 ### Health Check (Docker)
 GET http://localhost:5015/GenAI/health
 
-### Generate Text with OpenAI (Local Development)
-POST http://localhost:5000/GenAI/generate
+### Generate Text with OpenAI
+POST http://localhost:5015/GenAI/generate
 Content-Type: application/json
 
 {
@@ -15,7 +12,7 @@ Content-Type: application/json
 }
 
 ### Generate Text with OpenAI and System Prompt
-POST http://localhost:5001/GenAI/generate
+POST http://localhost:5015/GenAI/generate
 Content-Type: application/json
 
 {
@@ -26,7 +23,7 @@ Content-Type: application/json
 }
 
 ### Generate Text with Gemini
-POST http://localhost:5001/GenAI/generate
+POST http://localhost:5015/GenAI/generate
 Content-Type: application/json
 
 {
@@ -38,7 +35,7 @@ Content-Type: application/json
 ### Generate Text with Gemini and System Prompt
 # Note: Gemini doesn't support system role directly, so the system prompt 
 # is combined with the user prompt as plain text with newlines
-POST http://localhost:5001/GenAI/generate
+POST http://localhost:5015/GenAI/generate
 Content-Type: application/json
 
 {
@@ -49,7 +46,7 @@ Content-Type: application/json
 }
 
 ### Generate Text with Default Provider
-POST http://localhost:5001/GenAI/generate
+POST http://localhost:5015/GenAI/generate
 Content-Type: application/json
 
 {
@@ -57,7 +54,7 @@ Content-Type: application/json
 }
 
 ### Error: Empty Prompt
-POST http://localhost:5001/GenAI/generate
+POST http://localhost:5015/GenAI/generate
 Content-Type: application/json
 
 {
@@ -66,7 +63,7 @@ Content-Type: application/json
 }
 
 ### Error: Invalid Provider
-POST http://localhost:5001/GenAI/generate
+POST http://localhost:5015/GenAI/generate
 Content-Type: application/json
 
 {
@@ -75,7 +72,7 @@ Content-Type: application/json
 }
 
 ### Error: Invalid Model (for OpenAI)
-POST http://localhost:5001/GenAI/generate
+POST http://localhost:5015/GenAI/generate
 Content-Type: application/json
 
 {
@@ -85,7 +82,7 @@ Content-Type: application/json
 }
 
 ### Long Request with System Instructions
-POST http://localhost:5001/GenAI/generate
+POST http://localhost:5015/GenAI/generate
 Content-Type: application/json
 
 {

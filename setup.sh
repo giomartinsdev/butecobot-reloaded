@@ -102,7 +102,7 @@ check_health "Client API" "http://localhost:5010/health"
 check_health "Balance API" "http://localhost:5011/health"
 check_health "Coin API" "http://localhost:5012/health"
 check_health "Bet API" "http://localhost:5013/health"
-check_health "GenAI API" "http://localhost:5014/health"
+check_health "GenAI API" "http://localhost:5015/health"
 
 # Discord bot health is via logs
 BOT_LOGS=$(docker-compose logs --tail=20 buteco-bot 2>/dev/null)

@@ -65,6 +65,13 @@ public class GenAIController : ControllerBase
         }
     }
 
+    [HttpGet("/health")]
+    public IActionResult RootHealthCheck()
+    {
+        _logger.LogInformation("Root health check requested");
+        return Ok(new { status = "healthy", service = "ai-api" });
+    }
+
     [HttpGet("health")]
     public IActionResult HealthCheck()
     {
