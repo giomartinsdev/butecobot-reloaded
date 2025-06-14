@@ -1,6 +1,6 @@
 import discord
 from discord import app_commands
-from tools.utils import get_or_create_user, make_api_request
+from tools.utils import get_or_create_user, make_api_request, requires_registration
 from tools.constants import BALANCE_API_URL, COIN_API_URL
 import aiohttp
 
@@ -8,6 +8,7 @@ from typing import Optional
 
 def coins_commands(bot):
     @bot.tree.command(name="ver_coins", description="Verifique seu saldo atual")
+    @requires_registration()
     async def ver_coins(interaction: discord.Interaction, user: Optional[discord.Member] = None):
         """Check balance for yourself or another user."""
         await interaction.response.defer(ephemeral=True)
@@ -16,14 +17,6 @@ def coins_commands(bot):
         discord_id = str(target_user.id)
         
         user_data = await get_or_create_user(discord_id, target_user.display_name)
-        if not user_data:
-            embed = discord.Embed(
-                title="❌ Usuário Não Encontrado",
-                description="Usuário não está registrado no sistema.",
-                color=discord.Color.red()
-            )
-            await interaction.followup.send(embed=embed, ephemeral=True)
-            return
         
         async with aiohttp.ClientSession() as session:
             status, balance_data = await make_api_request(
@@ -52,21 +45,13 @@ def coins_commands(bot):
         await interaction.followup.send(embed=embed, ephemeral=True)
 
     @bot.tree.command(name="coins", description="Colete suas moedas diárias")
+    @requires_registration()
     async def coins(interaction: discord.Interaction):
         """Claim daily coins."""
         await interaction.response.defer(ephemeral=True)
         
         discord_id = str(interaction.user.id)
         user_data = await get_or_create_user(discord_id, interaction.user.display_name)
-        
-        if not user_data:
-            embed = discord.Embed(
-                title="❌ Registration Required",
-                description="Please use `/register` first!",
-                color=discord.Color.red()
-            )
-            await interaction.followup.send(embed=embed, ephemeral=True)
-            return
         
         async with aiohttp.ClientSession() as session:
             claim_data = {"clientId": user_data['id']}
@@ -103,6 +88,7 @@ def coins_commands(bot):
 
     @bot.tree.command(name="historico_de_coins", description="Veja seu histórico de coletas diárias")
     @app_commands.describe(limit="Número de coletas para mostrar (máximo 30)")
+    @requires_registration()
     async def historico_de_coins(interaction: discord.Interaction, limit: int = 10):
         """Show user's daily claim history."""
         await interaction.response.defer(ephemeral=True)
@@ -114,15 +100,6 @@ def coins_commands(bot):
         
         discord_id = str(interaction.user.id)
         user_data = await get_or_create_user(discord_id, interaction.user.display_name)
-        
-        if not user_data:
-            embed = discord.Embed(
-                title="❌ Registro Necessário",
-                description="Use `/register` primeiro!",
-                color=discord.Color.red()
-            )
-            await interaction.followup.send(embed=embed, ephemeral=True)
-            return
         
         async with aiohttp.ClientSession() as session:
             status, history_data = await make_api_request(

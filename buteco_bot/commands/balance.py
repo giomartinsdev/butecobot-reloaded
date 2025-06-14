@@ -1,7 +1,7 @@
 from discord import app_commands
 import discord
 import aiohttp
-from tools.utils import get_or_create_user, make_api_request
+from tools.utils import get_or_create_user, make_api_request, requires_registration
 from tools.constants import BALANCE_API_URL, CLIENT_API_URL
 
 def balance_commands(bot):
@@ -11,6 +11,7 @@ def balance_commands(bot):
         amount="Quantidade de moedas para transferir",
         description="Descrição opcional para a transferência"
     )
+    @requires_registration()
     async def transferir(interaction: discord.Interaction, recipient: discord.Member, amount: int, description: str = "Transferência de moedas"):
         """Transfer coins between users."""
         await interaction.response.defer(ephemeral=True)
@@ -99,6 +100,7 @@ def balance_commands(bot):
 
     @bot.tree.command(name="top_patroes", description="Mostre os melhores usuários por saldo")
     @app_commands.describe(limit="Número de usuários para mostrar (máximo 20)")
+    @requires_registration()
     async def top_patroes(interaction: discord.Interaction, limit: int = 10):
         """Show leaderboard of users by balance."""
         await interaction.response.defer(ephemeral=True)
@@ -161,6 +163,7 @@ def balance_commands(bot):
 
     @bot.tree.command(name="extrato", description="Veja seu histórico de transações")
     @app_commands.describe(limit="Número de transações para mostrar (máximo 50)")
+    @requires_registration()
     async def extrato(interaction: discord.Interaction, limit: int = 10):
         """Show user's transaction history."""
         await interaction.response.defer(ephemeral=True)
@@ -172,15 +175,6 @@ def balance_commands(bot):
         
         discord_id = str(interaction.user.id)
         user_data = await get_or_create_user(discord_id, interaction.user.display_name)
-        
-        if not user_data:
-            embed = discord.Embed(
-                title="❌ Registro Necessário",
-                description="Use `/register` primeiro!",
-                color=discord.Color.red()
-            )
-            await interaction.followup.send(embed=embed)
-            return
         
         async with aiohttp.ClientSession() as session:
             status, operations = await make_api_request(

@@ -1,7 +1,7 @@
 from discord import app_commands
 import discord
 import aiohttp
-from tools.utils import make_api_request, get_or_create_user, is_admin
+from tools.utils import make_api_request, get_or_create_user, is_admin, requires_registration
 from tools.constants import BET_API_URL
 
 def bet_commands(bot):
@@ -82,6 +82,7 @@ def bet_commands(bot):
 
     @bot.tree.command(name="evento_info", description="Ver detalhes de uma aposta específica")
     @app_commands.describe(event_id="ID do evento de aposta para ver detalhes")
+    @requires_registration()
     async def evento_info(interaction: discord.Interaction, event_id: str):
         """Get detailed information about a specific bet event."""
         await interaction.response.defer()
@@ -165,6 +166,7 @@ def bet_commands(bot):
         await interaction.followup.send(embed=embed, ephemeral=True)
 
     @bot.tree.command(name="eventos_listar", description="Listar todas as apostas ativas")
+    @requires_registration()
     async def eventos_listar(interaction: discord.Interaction):
         """List all active bets."""
         await interaction.response.defer(ephemeral=True)
@@ -217,6 +219,7 @@ def bet_commands(bot):
         choice="Opção para apostar (1 ou 2)",
         amount="Quantidade de moedas para apostar"
     )
+    @requires_registration()
     async def evento_apostar(interaction: discord.Interaction, event_id: str, choice: int, amount: int):
         """Place a bet on a specific choice."""
         await interaction.response.defer(ephemeral=True)
@@ -241,15 +244,6 @@ def bet_commands(bot):
         
         discord_id = str(interaction.user.id)
         user_data = await get_or_create_user(discord_id, interaction.user.display_name)
-        
-        if not user_data:
-            embed = discord.Embed(
-                title="❌ Registro Necessário",
-                description="Use `/register` primeiro!",
-                color=discord.Color.red()
-            )
-            await interaction.followup.send(embed=embed, ephemeral=True)
-            return
         
         async with aiohttp.ClientSession() as session:
             status, event_response = await make_api_request(
@@ -459,21 +453,13 @@ def bet_commands(bot):
         await interaction.followup.send(embed=embed)
 
     @bot.tree.command(name="minhas_apostas", description="Ver suas apostas")
+    @requires_registration()
     async def minhas_apostas(interaction: discord.Interaction):
         """Get user's betting history."""
         await interaction.response.defer(ephemeral=True)
         
         discord_id = str(interaction.user.id)
         user_data = await get_or_create_user(discord_id, interaction.user.display_name)
-        
-        if not user_data:
-            embed = discord.Embed(
-                title="❌ Registro Necessário",
-                description="Use `/register` primeiro!",
-                color=discord.Color.red()
-            )
-            await interaction.followup.send(embed=embed, ephemeral=True)
-            return
         
         async with aiohttp.ClientSession() as session:
             status, response = await make_api_request(

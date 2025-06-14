@@ -50,6 +50,9 @@ public class GenAIService : IGenAIService
 
         try
         {
+
+            
+
             var startTime = DateTime.UtcNow;
             
             var response = await provider.GenerateAsync(
